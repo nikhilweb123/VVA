@@ -2,6 +2,7 @@
   "name": "architecture-portfolio",
   "version": "0.1.0",
   "private": true,
+  // Force Vercel redeploy
   "scripts": {
     "dev": "next dev",
     "build": "next build",
