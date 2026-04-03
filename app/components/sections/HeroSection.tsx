@@ -1,0 +1,131 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
+
+const slides = [
+  {
+    src: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1920&q=85",
+    title: "Designing to make an\nInspiring Reality",
+    subtitle: "Norbu Retreat, Dharamshala",
+    location: "Himachal Pradesh",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1920&q=85",
+    title: "Making Physical &\nEmotional Connections",
+    subtitle: "Chospa Hotel, Leh",
+    location: "Ladakh",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=1920&q=85",
+    title: "Transcending the\nBoundaries of Design",
+    subtitle: "Deerghayu Wellness, Noida",
+    location: "Uttar Pradesh",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1516455207990-7a41ce80f7ee?w=1920&q=85",
+    title: "Responding to\nContext and Culture",
+    subtitle: "Itimad'ud Daulah, Agra",
+    location: "Uttar Pradesh",
+  },
+];
+
+export default function HeroSection() {
+  const [current, setCurrent] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval>>();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoaded(true), 2400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % slides.length);
+    }, 5500);
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  const goTo = (idx: number) => {
+    setCurrent(idx);
+    clearInterval(intervalRef.current);
+    intervalRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % slides.length);
+    }, 5500);
+  };
+
+  return (
+    <section className="relative w-full h-screen overflow-hidden bg-obsidian">
+      {/* Slides */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={current}
+          initial={{ opacity: 0, scale: 1.08 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0"
+        >
+          <Image
+            src={slides[current].src}
+            alt={slides[current].subtitle}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+          <div className="hero-overlay absolute inset-0" />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Text Content */}
+      <div className="absolute inset-0 flex flex-col justify-end pb-24 px-8 md:px-16 lg:px-24">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`text-${current}`}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: loaded ? 1 : 0, y: loaded ? 0 : 40 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: loaded ? 0 : 0.3 }}
+          >
+            <p className="font-sans text-bone text-xs tracking-ultra uppercase mb-6">
+              {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")} &nbsp;—&nbsp; {slides[current].location}
+            </p>
+            <h1 className="font-serif text-ivory text-5xl md:text-7xl lg:text-8xl font-light leading-[1.05] tracking-tight whitespace-pre-line mb-6 max-w-3xl">
+              {slides[current].title}
+            </h1>
+            <p className="font-sans text-bone text-sm tracking-wide italic">
+              {slides[current].subtitle}
+            </p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Dots */}
+      <div className="absolute bottom-8 right-8 md:right-16 flex gap-3">
+        {slides.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goTo(i)}
+            className={`w-6 h-px transition-all duration-500 ${
+              i === current ? "bg-ivory w-12" : "bg-bone/40"
+            }`}
+          />
+        ))}
+      </div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: loaded ? 1 : 0 }}
+        transition={{ delay: 3, duration: 1 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+      >
+        <span className="font-sans text-bone text-[10px] tracking-ultra uppercase">Scroll</span>
+        <div className="scroll-bounce w-px h-8 bg-gradient-to-b from-bone/80 to-transparent" />
+      </motion.div>
+    </section>
+  );
+}
