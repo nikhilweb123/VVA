@@ -38,10 +38,11 @@
   ],
   "exclude": [
     "node_modules",
+    "src",
     "playwright-fixture.ts",
     "playwright.config.ts",
     "**/*.spec.ts",
     "**/*.test.ts",
     "tests"
-  ]
+]
 }
