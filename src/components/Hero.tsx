@@ -52,7 +52,7 @@ const Hero = () => {
           }`}
         >
           <img
-            src={slide.image}
+            src={slide.image.src}
             alt={slide.subtitle}
             className={`w-full h-full object-cover transition-transform duration-[8s] ease-out ${
               i === current ? "scale-105" : "scale-100"
