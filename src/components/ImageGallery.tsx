@@ -46,7 +46,7 @@ const GalleryItem = ({ image, index }: { image: typeof images[0]; index: number 
       style={{ transitionDelay: `${index * 0.1}s` }}
     >
       <img
-        src={image.src}
+        src={image.src.src}
         alt={image.alt}
         loading="lazy"
         className="w-full h-full object-cover"
