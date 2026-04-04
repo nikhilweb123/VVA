@@ -73,7 +73,7 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
     >
       <div ref={parallaxRef} className="absolute inset-[-10%] w-[120%] h-[120%]">
         <img
-          src={project.image}
+          src={project.image.src}
           alt={project.location}
           loading="lazy"
           className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
