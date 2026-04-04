@@ -11,6 +11,7 @@ import ImageGrid             from "./components/sections/ImageGrid";
 import AboutPreview          from "./components/sections/AboutPreview";
 import Footer                from "./components/sections/Footer";
 
+
 export default function Home() {
   return (
     <SmoothScrollProvider>
