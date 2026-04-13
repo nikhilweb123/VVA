@@ -155,7 +155,7 @@ export default function ProjectShowcase() {
           initial={{ opacity: 0, y: 20 }}
           animate={titleInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
-          className="font-sans text-ash text-[10px] tracking-ultra uppercase mb-4"
+          className="font-sans text-ash text-[16px] tracking-ultra uppercase mb-4"
         >
           Selected Work
         </motion.p>

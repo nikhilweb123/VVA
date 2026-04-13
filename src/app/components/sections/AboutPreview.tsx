@@ -115,7 +115,7 @@ export default function AboutPreview() {
 
         {/* Philosophy */}
         <div ref={cardsRef} className="md:col-span-3 px-10 md:px-16 py-16">
-          <p className="font-sans text-black/40 text-[10px] tracking-ultra uppercase mb-10">How We Work</p>
+          <p className="font-sans text-black/40 text-[14px] tracking-ultra uppercase mb-10">How We Work</p>
           <div className="space-y-0 divide-y divide-black/10">
             {philosophy.map((item, i) => (
               <motion.div

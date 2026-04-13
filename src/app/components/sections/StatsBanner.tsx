@@ -27,10 +27,10 @@ export default function StatsBanner() {
           className={`flex flex-col items-start justify-center py-12 px-10 md:px-14 border-r border-black/10 last:border-r-0 ${i % 2 === 0 ? "border-b md:border-b-0" : ""
             }`}
         >
-          <span className="font-serif text-black text-5xl md:text-6xl font-light mb-2">
+          <span className="font-serif text-white text-5xl md:text-6xl font-light mb-2">
             {stat.value}
           </span>
-          <span className="font-sans text-black/60 text-[10px] tracking-ultra uppercase">
+          <span className="font-sans text-white text-[10px] tracking-ultra uppercase">
             {stat.label}
           </span>
         </motion.div>

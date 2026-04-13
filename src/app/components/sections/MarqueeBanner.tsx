@@ -28,8 +28,8 @@ export default function MarqueeBanner() {
             key={i}
             className={
               item === "—"
-                ? "font-sans text-black/40 text-xs"
-                : "font-serif text-black text-sm tracking-wide"
+                ? "font-sans text-white/40 text-xs"
+                : "font-serif text-white text-sm tracking-wide"
             }
           >
             {item}

@@ -48,7 +48,7 @@ export default function ImageGrid() {
           initial={{ opacity: 0, y: 15 }}
           animate={headInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
-          className="font-sans text-black/40 text-[13px] tracking-ultra uppercase mb-3"
+          className="font-sans text-black/40 text-[16px] tracking-ultra uppercase mb-3"
         >
           Studio Imagery
         </motion.p>
