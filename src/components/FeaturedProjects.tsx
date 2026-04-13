@@ -19,7 +19,7 @@ const projects = [
   },
   {
     image: project3,
-    title: "Elevating Industrial Design\nto Corporate Excellence",
+    title: "Industrial Design \nwith Precision",
     location: "Greater Noida",
     category: "Industrial",
   },

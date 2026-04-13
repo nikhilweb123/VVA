@@ -7,18 +7,18 @@ import { useInView } from "../../hooks/useInView";
 const philosophy = [
   {
     num: "01",
-    title: "Context",
-    body: "Every project begins with deep listening — to the land, the light, the culture, and the people who will inhabit the space.",
+    title: "Approach",
+    body: "Every project is guided by a deep understanding of client aspirations, ensuring designs that are both functional and meaningful.",
   },
   {
     num: "02",
-    title: "Craft",
-    body: "We believe beauty and ingenuity are inseparable. From macro concept to the smallest material detail, each decision is intentional.",
+    title: "Design",
+    body: "We focus on creating residential, commercial, and public spaces that balance modern aesthetics with practical efficiency.",
   },
   {
     num: "03",
-    title: "Continuity",
-    body: "Architecture must age with grace. We design for the long term — for buildings that grow richer with time, not merely more worn.",
+    title: "Execution",
+    body: "From concept to completion, we deliver cohesive architectural solutions that enhance user experience and create lasting value.",
   },
 ];
 
@@ -32,19 +32,19 @@ export default function AboutPreview() {
       {/* Big Quote */}
       <div
         ref={quoteRef}
-        className="py-28 md:py-40 px-8 md:px-16 lg:px-24 border-t border-bone/10"
+        className="py-28 md:py-40 px-8 md:px-16 lg:px-24 border-t border-black/10"
       >
         <motion.p
           initial={{ opacity: 0, y: 15 }}
           animate={quoteInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
-          className="font-sans text-ash text-[10px] tracking-ultra uppercase mb-12"
+          className="font-sans text-black/40 text-[10px] tracking-ultra uppercase mb-12"
         >
           Our Studio
         </motion.p>
 
         <div className="max-w-5xl">
-          {"Enso symbolizes a moment when the mind is free to simply let the body and spirit create."
+          {"Creating timeless architecture that transforms everyday living and working environments."
             .split(" ")
             .map((word, i) => (
               <motion.span
@@ -52,8 +52,12 @@ export default function AboutPreview() {
                 ref={i === 0 ? wordsRef : undefined}
                 initial={{ opacity: 0, y: 20 }}
                 animate={quoteInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: i * 0.04 + 0.2, ease: [0.22, 1, 0.36, 1] }}
-                className="inline-block font-serif text-ivory text-3xl md:text-5xl lg:text-6xl font-light leading-snug mr-3 md:mr-4"
+                transition={{
+                  duration: 0.6,
+                  delay: i * 0.04 + 0.2,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className="inline-block font-sans text-black text-3xl md:text-5xl lg:text-6xl font-light leading-snug mr-3 md:mr-4"
               >
                 {word}
               </motion.span>
@@ -67,17 +71,13 @@ export default function AboutPreview() {
           className="mt-16 grid md:grid-cols-2 gap-10 md:gap-20"
         >
           <div>
-            <p className="font-sans text-ash text-sm leading-relaxed">
-              FORMA is an architecture and interior design consultancy working at every scale — from
-              bespoke residences to institutional landmarks. Founded on the belief that simplicity is the
-              ultimate sophistication, we deliver discreet individual solutions that favour clarity.
+            <p className="font-sans text-gray-600 text-lg leading-relaxed">
+              Established in 2024 in Faridabad, our architecture firm is driven by a commitment to transform lives through thoughtful and exceptional design. We specialize in creating distinguished residential and workplace environments, along with meaningful public spaces that respond to evolving urban needs.
             </p>
           </div>
           <div>
-            <p className="font-sans text-ash text-sm leading-relaxed">
-              Our work spans the country and continues to cover new ground with each commission. We
-              approach each project with equal enthusiasm, from the broadest site strategy to the finest
-              material specification — giving coherence to the experience of the whole.
+            <p className="font-sans text-gray-600 text-lg leading-relaxed">
+              Every project is carefully conceived to reflect our clients’ aspirations, balancing functionality with timeless aesthetics. From concept to execution, we focus on delivering cohesive spaces that enhance everyday experiences and create lasting value across every scale of development.
             </p>
           </div>
         </motion.div>
@@ -87,12 +87,13 @@ export default function AboutPreview() {
           initial={{ opacity: 0, y: 15 }}
           animate={quoteInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 1 }}
-          className="nav-link mt-12 inline-flex items-center gap-3 font-sans text-ivory text-xs tracking-ultra uppercase group"
+          className="nav-link mt-12 inline-flex items-center gap-3 font-sans text-black text-xs tracking-ultra uppercase group"
         >
           Our Philosophy
-          <span className="block w-8 h-px bg-ivory transition-all duration-500 group-hover:w-14" />
+          <span className="block w-8 h-px bg-black transition-all duration-500 group-hover:w-14" />
         </motion.a>
       </div>
+
 
       {/* Image + Philosophy cards */}
       <div className="grid md:grid-cols-5 border-t border-bone/10">
@@ -114,8 +115,8 @@ export default function AboutPreview() {
 
         {/* Philosophy */}
         <div ref={cardsRef} className="md:col-span-3 px-10 md:px-16 py-16">
-          <p className="font-sans text-ash text-[10px] tracking-ultra uppercase mb-10">How We Work</p>
-          <div className="space-y-0 divide-y divide-bone/10">
+          <p className="font-sans text-black/40 text-[10px] tracking-ultra uppercase mb-10">How We Work</p>
+          <div className="space-y-0 divide-y divide-black/10">
             {philosophy.map((item, i) => (
               <motion.div
                 key={item.num}
@@ -125,18 +126,19 @@ export default function AboutPreview() {
                 className="py-8 group"
               >
                 <div className="flex items-start gap-8">
-                  <span className="font-sans text-ash text-[10px] tracking-ultra pt-1 flex-shrink-0">{item.num}</span>
+                  <span className="font-sans text-black/40 text-[10px] tracking-ultra pt-1 flex-shrink-0">{item.num}</span>
                   <div>
-                    <h3 className="font-serif text-ivory text-2xl italic font-light mb-3 group-hover:translate-x-1 transition-transform duration-300">
+                    <h3 className="font-serif text-black text-2xl font-light mb-3 group-hover:translate-x-1 transition-transform duration-300">
                       {item.title}
                     </h3>
-                    <p className="font-sans text-ash text-sm leading-relaxed">{item.body}</p>
+                    <p className="font-sans text-black/60 md:text-lg leading-relaxed">{item.body}</p>
                   </div>
                 </div>
               </motion.div>
             ))}
           </div>
         </div>
+
       </div>
     </section>
   );

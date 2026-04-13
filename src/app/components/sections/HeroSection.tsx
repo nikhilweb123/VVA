@@ -19,7 +19,7 @@ const slides = [
   },
   {
     src: "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=1920&q=85",
-    title: "Elevating Industrial Design\nto Corporate Excellence",
+    title: "Industrial Design \nwith Precision",
     subtitle: "Lal Sweets, Greater Noida",
     location: "Uttar Pradesh",
   },
@@ -91,13 +91,13 @@ export default function HeroSection() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: loaded ? 0 : 0.3 }}
           >
-            <p className="font-sans text-bone text-xs tracking-ultra uppercase mb-6">
+            <p className="font-sans text-black/60 text-xs tracking-ultra uppercase mb-6">
               {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")} &nbsp;—&nbsp; {slides[current].location}
             </p>
-            <h1 className="font-serif text-ivory text-5xl md:text-7xl lg:text-8xl font-light leading-[1.05] tracking-tight whitespace-pre-line mb-6 max-w-3xl">
+            <h1 className="font-serif text-black text-4xl md:text-7xl lg:text-8xl font-light leading-[1.05] tracking-tight whitespace-pre-line mb-6 max-w-5xl">
               {slides[current].title}
             </h1>
-            <p className="font-sans text-bone text-sm tracking-wide italic">
+            <p className="font-sans text-black/80 text-sm tracking-wide">
               {slides[current].subtitle}
             </p>
           </motion.div>
@@ -110,7 +110,7 @@ export default function HeroSection() {
           <button
             key={i}
             onClick={() => goTo(i)}
-            className={`w-6 h-px transition-all duration-500 ${i === current ? "bg-ivory w-12" : "bg-bone/40"
+            className={`w-6 h-px transition-all duration-500 ${i === current ? "bg-black w-12" : "bg-black/20"
               }`}
           />
         ))}
@@ -123,9 +123,10 @@ export default function HeroSection() {
         transition={{ delay: 3, duration: 1 }}
         className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
-        <span className="font-sans text-bone text-[10px] tracking-ultra uppercase">Scroll</span>
-        <div className="scroll-bounce w-px h-8 bg-gradient-to-b from-bone/80 to-transparent" />
+        <span className="font-sans text-black/60 text-[10px] tracking-ultra uppercase">Scroll</span>
+        <div className="scroll-bounce w-px h-8 bg-gradient-to-b from-black/80 to-transparent" />
       </motion.div>
+
     </section>
   );
 }

@@ -1,3 +1,5 @@
+"use client";
+
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const About = () => {
@@ -5,40 +7,40 @@ const About = () => {
   const { ref: ref2, isRevealed: r2 } = useScrollReveal();
 
   return (
-    <section id="studio" className="section-padding py-32 md:py-48">
-      <div className="max-w-5xl mx-auto">
-        <div ref={ref1} className={`reveal-up ${r1 ? "revealed" : ""} mb-20`}>
-          <span className="text-label text-muted-foreground mb-6 block">About the Studio</span>
-          <h2 className="heading-serif text-4xl md:text-5xl lg:text-7xl text-foreground leading-tight">
-            Enso symbolizes a moment when the mind is free to simply let the body & spirit create.
+    <section id="studio" className="section-padding py-30 md:py-48">
+      <div className="max-w-7xl mx-auto">
+        <div ref={ref1} className={`reveal-up ${r1 ? "in-view" : ""} mb-20`}>
+          <span className="text-sm text-gray-500 mb-6 block">About the Studio</span>
+          <h2 className="font-sans text-4xl md:text-5xl lg:text-6xl text-black leading-tight">
+            Creating timeless architecture that transforms everyday living and working environments.
           </h2>
         </div>
 
-        <div ref={ref2} className={`reveal-up ${r2 ? "revealed" : ""}`} style={{ transitionDelay: "0.2s" }}>
+        <div ref={ref2} className={`reveal-up ${r2 ? "in-view" : ""}`} style={{ transitionDelay: "0.2s" }}>
           <div className="grid md:grid-cols-2 gap-12 md:gap-20">
-            <p className="text-body text-muted-foreground text-base md:text-lg">
-              Enso Design is a consultancy firm transcending the boundaries between Architecture
-              & Interior Design. We believe in creating spaces that inspire, transform, and
-              connect with the human spirit.
+            <p className="font-sans text-gray-600 text-base md:text-lg leading-relaxed">
+              Established in 2024 in Faridabad, our firm is committed to delivering thoughtful and
+              impactful architectural solutions. We specialize in residential, commercial, and public
+              spaces, creating environments that respond to modern needs while maintaining timeless design values.
             </p>
-            <p className="text-body text-muted-foreground text-base md:text-lg">
-              Our approach is rooted in context and culture, responding to each site's unique
-              character while pushing the boundaries of contemporary design. Every project is
-              an opportunity to create something extraordinary.
+            <p className="font-sans text-gray-600 text-base md:text-lg leading-relaxed">
+              Every project is designed with a deep understanding of client aspirations, ensuring a
+              balance between functionality, aesthetics, and long-term value. From concept to execution,
+              we focus on creating cohesive spaces that enhance user experience across every scale.
             </p>
           </div>
 
-          <div className="mt-20 pt-12 border-t border-border">
+          <div className="mt-20 pt-12 border-t border-gray-200">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               {[
-                { number: "50+", label: "Projects" },
-                { number: "12", label: "Years" },
-                { number: "8", label: "Awards" },
-                { number: "15", label: "Team Members" },
+                { number: "15+", label: "Projects" },
+                { number: "2024", label: "Established" },
+                { number: "5+", label: "Cities" },
+                { number: "Multi", label: "Sectors" },
               ].map((stat) => (
                 <div key={stat.label}>
-                  <span className="heading-serif text-3xl md:text-4xl text-primary">{stat.number}</span>
-                  <p className="text-label text-muted-foreground mt-2">{stat.label}</p>
+                  <span className="font-sans text-3xl md:text-4xl text-black">{stat.number}</span>
+                  <p className="text-sm text-gray-500 mt-2">{stat.label}</p>
                 </div>
               ))}
             </div>

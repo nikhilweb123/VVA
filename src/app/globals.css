@@ -1,36 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,200;0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+
 :root {
-  --font-cormorant: 'Cormorant Garamond', serif;
-  --font-dm-sans: 'DM Sans', sans-serif;
-  --obsidian: #0a0a0a;
-  --ivory: #f5f0e8;
-  --ash: #888880;
-  --bone: #d4cfc6;
+  --font-outfit: 'Outfit', sans-serif;
+  --obsidian: #ffffff;
+  --ivory: #000000;
+  --ash: #555555;
+  --bone: #cccccc;
 }
 
 * {
+  font-family: var(--font-outfit) !important;
   box-sizing: border-box;
   padding: 0;
   margin: 0;
 }
 
+
 html {
-  scroll-behavior: auto; /* Lenis handles smooth scroll */
+  scroll-behavior: auto;
+  /* Lenis handles smooth scroll */
   overflow-x: hidden;
 }
 
 body {
   background: var(--obsidian);
   color: var(--ivory);
-  font-family: var(--font-dm-sans);
+  font-family: var(--font-outfit);
   overflow-x: hidden;
-  cursor: none; /* custom cursor */
+  cursor: none;
+  /* custom cursor */
 }
+
 
 /* ── Custom Cursor ── */
 .cursor-dot {
@@ -39,7 +42,8 @@ body {
   background: var(--ivory);
   border-radius: 50%;
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%, -50%);
@@ -50,10 +54,11 @@ body {
 .cursor-ring {
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(245,240,232,0.5);
+  border: 1px solid rgba(245, 240, 232, 0.5);
   border-radius: 50%;
   position: fixed;
-  top: 0; left: 0;
+  top: 0;
+  left: 0;
   pointer-events: none;
   z-index: 9998;
   transform: translate(-50%, -50%);
@@ -64,7 +69,7 @@ body {
 .cursor-ring.hovered {
   width: 80px;
   height: 80px;
-  border-color: rgba(245,240,232,0.9);
+  border-color: rgba(245, 240, 232, 0.9);
 }
 
 /* ── Scroll Progress ── */
@@ -80,7 +85,8 @@ body {
 }
 
 /* ── Lenis ── */
-html.lenis, html.lenis body {
+html.lenis,
+html.lenis body {
   height: auto;
 }
 
@@ -93,28 +99,39 @@ html.lenis, html.lenis body {
 }
 
 /* ── Utility ── */
-.text-ivory { color: var(--ivory); }
-.text-ash   { color: var(--ash);   }
-.text-bone  { color: var(--bone);  }
-.bg-obsidian { background: var(--obsidian); }
+.text-ivory {
+  color: var(--ivory);
+}
+
+.text-ash {
+  color: var(--ash);
+}
+
+.text-bone {
+  color: var(--bone);
+}
+
+.bg-obsidian {
+  background: var(--obsidian);
+}
 
 /* ── Hero Overlay ── */
 .hero-overlay {
-  background: linear-gradient(
-    to bottom,
-    rgba(10,10,10,0.3) 0%,
-    rgba(10,10,10,0.1) 40%,
-    rgba(10,10,10,0.6) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.3) 0%,
+      rgba(255, 255, 255, 0.1) 40%,
+      rgba(255, 255, 255, 0.4) 100%);
 }
 
 /* ── Image hover effects ── */
 .img-zoom {
   overflow: hidden;
 }
+
 .img-zoom img {
-  transition: transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94);
+  transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+
 .img-zoom:hover img {
   transform: scale(1.06);
 }
@@ -124,6 +141,7 @@ html.lenis, html.lenis body {
   filter: grayscale(100%);
   transition: filter 0.6s ease, transform 0.8s ease;
 }
+
 .img-grayscale:hover img {
   filter: grayscale(0%);
   transform: scale(1.05);
@@ -131,9 +149,15 @@ html.lenis, html.lenis body {
 
 /* ── Marquee ── */
 @keyframes marquee {
-  0%   { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
 }
+
 .marquee-track {
   animation: marquee 30s linear infinite;
 }
@@ -142,6 +166,7 @@ html.lenis, html.lenis body {
 .nav-link {
   position: relative;
 }
+
 .nav-link::after {
   content: '';
   position: absolute;
@@ -150,8 +175,9 @@ html.lenis, html.lenis body {
   width: 0;
   height: 1px;
   background: var(--ivory);
-  transition: width 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+  transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
+
 .nav-link:hover::after {
   width: 100%;
 }
@@ -161,6 +187,7 @@ html.lenis, html.lenis body {
   opacity: 0;
   transform: translateY(40px);
 }
+
 .reveal-up.in-view {
   opacity: 1;
   transform: translateY(0);
@@ -180,9 +207,17 @@ html.lenis, html.lenis body {
 
 /* ── Scroll indicator bounce ── */
 @keyframes scrollBounce {
-  0%, 100% { transform: translateY(0); }
-  50%       { transform: translateY(8px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(8px);
+  }
 }
+
 .scroll-bounce {
   animation: scrollBounce 2s ease-in-out infinite;
 }
@@ -190,5 +225,5 @@ html.lenis, html.lenis body {
 /* ── Horizontal line ── */
 .hr-thin {
   border: none;
-  border-top: 1px solid rgba(212,207,198,0.2);
+  border-top: 1px solid rgba(212, 207, 198, 0.2);
 }

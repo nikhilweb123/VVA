@@ -9,15 +9,16 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        serif: ["var(--font-cormorant)", "Georgia", "serif"],
-        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
+        sans: ["var(--font-outfit)", "system-ui", "sans-serif"],
       },
+
       colors: {
-        obsidian: "#0a0a0a",
-        ivory: "#f5f0e8",
-        ash: "#888880",
-        bone: "#d4cfc6",
+        obsidian: "var(--obsidian)",
+        ivory: "var(--ivory)",
+        ash: "var(--ash)",
+        bone: "var(--bone)",
       },
+
       letterSpacing: {
         "ultra": "0.3em",
         "wide-xl": "0.2em",

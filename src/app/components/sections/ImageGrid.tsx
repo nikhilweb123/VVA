@@ -48,7 +48,7 @@ export default function ImageGrid() {
           initial={{ opacity: 0, y: 15 }}
           animate={headInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7 }}
-          className="font-sans text-slate-500 text-[10px] tracking-ultra uppercase mb-3"
+          className="font-sans text-black/40 text-[13px] tracking-ultra uppercase mb-3"
         >
           Studio Imagery
         </motion.p>
@@ -56,7 +56,7 @@ export default function ImageGrid() {
           initial={{ opacity: 0, y: 25 }}
           animate={headInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.7, delay: 0.1 }}
-          className="font-serif text-slate-900 text-5xl md:text-6xl font-light italic"
+          className="font-serif text-black text-5xl md:text-6xl font-light"
         >
           Craft &amp; Detail
         </motion.h2>
@@ -84,14 +84,15 @@ export default function ImageGrid() {
               loading="lazy"
             />
             {/* Caption overlay */}
-            <div className="absolute inset-0 bg-obsidian/0 group-hover:bg-obsidian/30 transition-all duration-500 flex items-end p-4">
-              <p className="font-sans text-ivory text-[10px] tracking-wider uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-2 group-hover:translate-y-0 transition-transform">
+            <div className="absolute inset-0 bg-white/0 group-hover:bg-white/40 transition-all duration-500 flex items-end p-4">
+              <p className="font-sans text-black text-[10px] tracking-wider uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-500 translate-y-2 group-hover:translate-y-0 transition-transform">
                 {img.alt}
               </p>
             </div>
           </motion.div>
         ))}
       </div>
+
     </section>
   );
 }

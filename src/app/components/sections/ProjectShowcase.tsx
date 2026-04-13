@@ -121,23 +121,24 @@ function ProjectCard({ project, index }: ProjectCardProps) {
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
         className={`flex flex-col justify-center px-10 md:px-16 py-16 ${isEven ? "order-2" : "order-2 md:order-1"}`}
       >
-        <p className="font-sans text-ash text-[10px] tracking-ultra uppercase mb-6">
+        <p className="font-sans text-black/40 text-[14px] tracking-ultra uppercase mb-6">
           {project.id} — {project.category} — {project.year}
         </p>
-        <h2 className="font-serif text-ivory text-4xl md:text-5xl font-light leading-tight italic mb-4">
+        <h2 className="font-serif text-black text-4xl md:text-6xl font-light leading-tight mb-4">
           {project.title}
         </h2>
-        <p className="font-sans text-bone text-xs tracking-wide mb-6">{project.location}</p>
-        <hr className="hr-thin mb-6" />
-        <p className="font-sans text-ash text-sm leading-relaxed mb-10">{project.description}</p>
+        <p className="font-sans text-black/60 text-xs tracking-wide mb-6">{project.location}</p>
+        <hr className="border-black/10 mb-6" />
+        <p className="font-sans text-black/60 text-sm leading-relaxed mb-10 md:text-2xl">{project.description}</p>
         <a
           href="#"
-          className="nav-link font-sans text-ivory text-xs tracking-ultra uppercase inline-flex items-center gap-3 group w-fit"
+          className="nav-link font-sans text-black text-xs tracking-ultra uppercase inline-flex items-center gap-3 group w-fit"
         >
           View Project
-          <span className="block w-8 h-px bg-ivory transition-all duration-500 group-hover:w-14" />
+          <span className="block w-8 h-px bg-black transition-all duration-500 group-hover:w-14" />
         </a>
       </motion.div>
+
     </div>
   );
 }
@@ -162,7 +163,7 @@ export default function ProjectShowcase() {
           initial={{ opacity: 0, y: 30 }}
           animate={titleInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="font-serif text-ivory text-5xl md:text-6xl font-light italic"
+          className="font-serif text-ivory text-7xl md:text-6xl font-light"
         >
           Projects
         </motion.h2>

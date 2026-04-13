@@ -39,7 +39,7 @@ export default function PageLoader() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="font-serif text-ivory text-6xl md:text-8xl font-light tracking-ultra italic mb-8"
+              className="font-serif text-ivory text-6xl md:text-8xl font-light tracking-ultra mb-8"
             >
               VVA
             </motion.p>
