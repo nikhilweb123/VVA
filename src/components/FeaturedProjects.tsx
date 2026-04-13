@@ -7,29 +7,30 @@ import project4 from "@/assets/project-4.jpg";
 const projects = [
   {
     image: project1,
-    title: "Responding to Contexts\nand Culture",
-    location: "Heritage Hotel, Agra",
-    category: "Hospitality",
+    title: "A Sleek Vision of\nModern Commerce",
+    location: "Manesar",
+    category: "Commercial",
   },
   {
     image: project2,
-    title: "Creating a Better World\nto Live, Work and Play",
-    location: "Innovation Hub, Bangalore",
+    title: "Merging Modernity with\nCultural Heritage",
+    location: "Amritsar",
     category: "Commercial",
   },
   {
     image: project3,
-    title: "Transcending the Boundaries\nBetween Nature & Design",
-    location: "Mountain Retreat, Dharamshala",
-    category: "Residential",
+    title: "Elevating Industrial Design\nto Corporate Excellence",
+    location: "Greater Noida",
+    category: "Industrial",
   },
   {
     image: project4,
-    title: "Where Wellness Meets\nArchitectural Excellence",
-    location: "Wellness Center, Noida",
-    category: "Healthcare",
+    title: "Strategic Planning for\nSustainable Living",
+    location: "Bengaluru",
+    category: "Master Planning",
   },
 ];
+
 
 const FeaturedProjects = () => {
   return (
@@ -66,9 +67,8 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
   return (
     <div
       ref={ref}
-      className={`relative h-[70vh] md:h-screen overflow-hidden cursor-pointer group reveal-scale ${
-        isRevealed ? "revealed" : ""
-      }`}
+      className={`relative h-[70vh] md:h-screen overflow-hidden cursor-pointer group reveal-scale ${isRevealed ? "revealed" : ""
+        }`}
       style={{ transitionDelay: `${index * 0.1}s` }}
     >
       <div ref={parallaxRef} className="absolute inset-[-10%] w-[120%] h-[120%]">

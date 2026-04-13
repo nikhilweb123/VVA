@@ -7,29 +7,30 @@ import Image from "next/image";
 const slides = [
   {
     src: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1920&q=85",
-    title: "Designing to make an\nInspiring Reality",
-    subtitle: "Norbu Retreat, Dharamshala",
-    location: "Himachal Pradesh",
+    title: "A Sleek Vision of\nModern Commerce",
+    subtitle: "Golden Square, Manesar",
+    location: "Haryana",
   },
   {
     src: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1920&q=85",
-    title: "Making Physical &\nEmotional Connections",
-    subtitle: "Chospa Hotel, Leh",
-    location: "Ladakh",
+    title: "Merging Modernity with\nCultural Heritage",
+    subtitle: "Mall Extension, Amritsar",
+    location: "Punjab",
   },
   {
     src: "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=1920&q=85",
-    title: "Transcending the\nBoundaries of Design",
-    subtitle: "Deerghayu Wellness, Noida",
+    title: "Elevating Industrial Design\nto Corporate Excellence",
+    subtitle: "Lal Sweets, Greater Noida",
     location: "Uttar Pradesh",
   },
   {
     src: "https://images.unsplash.com/photo-1516455207990-7a41ce80f7ee?w=1920&q=85",
-    title: "Responding to\nContext and Culture",
-    subtitle: "Itimad'ud Daulah, Agra",
-    location: "Uttar Pradesh",
+    title: "Strategic Planning for\nSustainable Living",
+    subtitle: "Village Wave Group, Bengaluru",
+    location: "Karnataka",
   },
 ];
+
 
 export default function HeroSection() {
   const [current, setCurrent] = useState(0);
@@ -109,9 +110,8 @@ export default function HeroSection() {
           <button
             key={i}
             onClick={() => goTo(i)}
-            className={`w-6 h-px transition-all duration-500 ${
-              i === current ? "bg-ivory w-12" : "bg-bone/40"
-            }`}
+            className={`w-6 h-px transition-all duration-500 ${i === current ? "bg-ivory w-12" : "bg-bone/40"
+              }`}
           />
         ))}
       </div>
