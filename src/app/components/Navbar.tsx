@@ -2,16 +2,19 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter, usePathname } from "next/navigation";
 
 const navLinks = [
-  { label: "Projects", href: "#projects" },
-  { label: "About", href: "#about" },
-  { label: "Contact", href: "#contact" },
+  { label: "Projects", href: "/projects" },
+  { label: "About", href: "/#about" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 60);
@@ -21,8 +24,17 @@ export default function Navbar() {
 
   const handleNav = (href: string) => {
     setMenuOpen(false);
-    const el = document.querySelector(href);
-    if (el) el.scrollIntoView({ behavior: "smooth" });
+    if (href.startsWith("/#")) {
+      const targetId = href.substring(1);
+      if (pathname === "/") {
+        const el = document.querySelector(targetId);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      } else {
+        router.push(href);
+      }
+    } else {
+      router.push(href);
+    }
   };
 
   return (
@@ -38,7 +50,14 @@ export default function Navbar() {
         <a
           href="/"
           className="flex items-center gap-2 font-serif text-black text-xl tracking-ultra font-light"
-          onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+          onClick={(e) => {
+            e.preventDefault();
+            if (pathname === "/") {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            } else {
+              router.push("/");
+            }
+          }}
         >
           <img
             src="/logo_transparent.png"
