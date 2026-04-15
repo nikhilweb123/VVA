@@ -1,52 +1,22 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useInView } from "../../hooks/useInView";
 
-const projects = [
-  {
-    id: "01",
-    title: "Golden Square",
-    location: "Manesar",
-    category: "Commercial",
-    year: "2024",
-    src: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1920&q=85",
-    description: "65,000 sqft commercial development with a sleek black and grey façade. Expansive glass surfaces paired with warm wooden accents and green terraces enhance the environment.",
-  },
-  {
-    id: "02",
-    title: "Mall Extension",
-    location: "Amritsar",
-    category: "Commercial",
-    year: "2023",
-    src: "https://images.unsplash.com/photo-1460317442991-0ec209397118?w=1920&q=85",
-    description: "73,000 sqft mall extension blending modern and cultural design. Façade features off-white panels, bronze accents, and traditional jali screens with a grand double-height entry porch.",
-  },
-  {
-    id: "03",
-    title: "Lal Sweets",
-    location: "Greater Noida",
-    category: "Industrial",
-    year: "2023",
-    src: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=85",
-    description: "Modern industrial-commercial facility with a strong architectural identity. Vertical fins and bold frames define the exterior structure, designed for efficiency and functional excellence.",
-  },
-  {
-    id: "04",
-    title: "Village Wave Group",
-    location: "Bengaluru",
-    category: "Master Planning",
-    year: "2024",
-    src: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1920&q=85",
-    description: "Large-scale plotted development with strategic master planning. Focus on optimized land use and organized infrastructure to create balanced and sustainable urban environments.",
-  },
-];
-
+export interface Project {
+  id: string;
+  title: string;
+  location: string;
+  category: string;
+  year: string;
+  src: string;
+  description: string;
+}
 
 interface ProjectCardProps {
-  project: (typeof projects)[0];
+  project: Project;
   index: number;
 }
 
@@ -145,6 +115,21 @@ function ProjectCard({ project, index }: ProjectCardProps) {
 
 export default function ProjectShowcase() {
   const { ref: titleRef, inView: titleInView } = useInView();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/projects')
+      .then(res => res.json())
+      .then(data => {
+        setProjects(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch projects', err);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <section id="projects" className="bg-obsidian py-24">
@@ -172,10 +157,16 @@ export default function ProjectShowcase() {
       <hr className="hr-thin mx-8 md:mx-16 mb-0" />
 
       {/* Projects */}
-      <div className="divide-y divide-bone/10">
-        {projects.map((project, i) => (
-          <ProjectCard key={project.id} project={project} index={i} />
-        ))}
+      <div className="divide-y divide-bone/10 min-h-[50vh]">
+        {loading ? (
+          <div className="flex items-center justify-center py-32">
+            <p className="font-sans text-ash text-xs tracking-ultra uppercase animate-pulse">Loading projects...</p>
+          </div>
+        ) : (
+          projects.map((project, i) => (
+            <ProjectCard key={project.id} project={project} index={i} />
+          ))
+        )}
       </div>
     </section>
   );
