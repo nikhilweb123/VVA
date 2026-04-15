@@ -12,11 +12,22 @@ const social = [
 const navCols = [
   {
     heading: "Studio",
-    links: ["Projects", "About", "Journal", "Contact"],
+    links: [
+      { label: "Projects", href: "/projects" },
+      { label: "About", href: "/about" },
+      { label: "Journal", href: "#" },
+      { label: "Our Team", href: "/team" },
+      { label: "Contact", href: "/contact" },
+    ],
   },
   {
     heading: "Services",
-    links: ["Architecture", "Interiors", "Masterplanning", "Consultancy"],
+    links: [
+      { label: "Architecture", href: "/services" },
+      { label: "Interiors", href: "/services" },
+      { label: "Masterplanning", href: "/services" },
+      { label: "Consultancy", href: "/services" },
+    ],
   },
 ];
 
@@ -79,12 +90,12 @@ export default function Footer() {
             <p className="font-sans text-white/40 text-[14px] tracking-ultra uppercase mb-5">{col.heading}</p>
             <ul className="space-y-3">
               {col.links.map((link) => (
-                <li key={link}>
+                <li key={link.label}>
                   <a
-                    href="#"
+                    href={link.href}
                     className="nav-link font-sans text-white/80 text-m hover:text-white transition-colors duration-300"
                   >
-                    {link}
+                    {link.label}
                   </a>
                 </li>
               ))}
