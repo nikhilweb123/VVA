@@ -9,6 +9,7 @@ import ProjectShowcase from "./components/sections/ProjectShowcase";
 import StatsBanner from "./components/sections/StatsBanner";
 import ImageGrid from "./components/sections/ImageGrid";
 import AboutPreview from "./components/sections/AboutPreview";
+import Services from "./components/sections/Services";
 import About from "../components/About";
 import Footer from "./components/sections/Footer";
 
@@ -29,6 +30,7 @@ export default function Home() {
         <HeroSection />
         <MarqueeBanner />
         <AboutPreview />
+        <Services isPage={false} />
         <About />
         <ProjectShowcase />
         <StatsBanner />

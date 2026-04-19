@@ -26,11 +26,11 @@ const servicesList = [
   }
 ];
 
-export default function Services() {
+export default function Services({ isPage = true }: { isPage?: boolean }) {
   const { ref: headerRef, inView: headerInView } = useInView();
 
   return (
-    <section className="bg-obsidian pt-40 pb-32 min-h-screen">
+    <section id="services" className={`bg-obsidian ${isPage ? "pt-40" : "pt-24"} pb-32 min-h-screen`}>
       {/* Section Header */}
       <div className="px-8 md:px-16 mb-24 max-w-5xl">
         <motion.p
