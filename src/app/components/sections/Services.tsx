@@ -6,22 +6,22 @@ import { useInView } from "../../hooks/useInView";
 const servicesList = [
   {
     id: "01",
-    title: "Architectural Design",
+    title: "Architecture",
     description: "Creating visionary, functional, and sustainable structures that redefine spatial experiences and respond harmoniously to their contexts."
   },
   {
     id: "02",
-    title: "Interior Design",
+    title: "Interiors",
     description: "Crafting immersive interior environments that balance aesthetic elegance with intuitive flow, enhancing the way people live and work."
   },
   {
     id: "03",
-    title: "Master Planning",
+    title: "Masterplanning",
     description: "Developing comprehensive, forward-looking urban strategies that integrate community needs, ecological balance, and long-term viability."
   },
   {
     id: "04",
-    title: "Project Management",
+    title: "Consultancy",
     description: "Ensuring seamless execution from concept to completion through rigorous oversight, skilled coordination, and an unwavering commitment to quality."
   }
 ];

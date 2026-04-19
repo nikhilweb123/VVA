@@ -15,7 +15,6 @@ const navCols = [
     links: [
       { label: "Projects", href: "/projects" },
       { label: "About", href: "/about" },
-      { label: "Journal", href: "#" },
       { label: "Our Team", href: "/team" },
       { label: "Contact", href: "/contact" },
     ],
@@ -23,10 +22,10 @@ const navCols = [
   {
     heading: "Services",
     links: [
-      { label: "Architecture", href: "/services" },
-      { label: "Interiors", href: "/services" },
-      { label: "Masterplanning", href: "/services" },
-      { label: "Consultancy", href: "/services" },
+      { label: "Architecture", href: "/#services" },
+      { label: "Interiors", href: "/#services" },
+      { label: "Masterplanning", href: "/#services" },
+      { label: "Consultancy", href: "/#services" },
     ],
   },
 ];
