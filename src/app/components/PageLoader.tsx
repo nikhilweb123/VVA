@@ -35,14 +35,14 @@ export default function PageLoader() {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
           <div className="text-center">
-            <motion.p
+            <motion.img
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="font-serif text-ivory text-6xl md:text-8xl font-light tracking-ultra mb-8"
-            >
-              VVA
-            </motion.p>
+              src="/logo_transparent.png"
+              alt="VVA Design Studio"
+              className="h-24 md:h-32 w-auto mx-auto mb-8"
+            />
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: "100%" }}
