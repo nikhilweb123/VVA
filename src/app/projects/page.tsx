@@ -19,7 +19,7 @@ export default function ProjectsPage() {
 
       {/* Page content */}
       <main className="pt-24 bg-obsidian min-h-screen">
-        <ProjectShowcase />
+        <ProjectShowcase allProjects={true} />
       </main>
 
       <Footer />

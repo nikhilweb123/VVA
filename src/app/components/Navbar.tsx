@@ -82,7 +82,7 @@ export default function Navbar() {
 
         {/* Mobile Hamburger */}
         <button
-          className="md:hidden flex flex-col gap-[5px] group"
+          className="md:hidden flex flex-col gap-[5px] group z-[70] relative"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
@@ -97,24 +97,27 @@ export default function Navbar() {
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-40 bg-white/98 flex flex-col items-center justify-center gap-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-[60] bg-ivory flex flex-col items-center justify-center gap-12"
+            onClick={() => setMenuOpen(false)}
           >
-            {navLinks.map((link, i) => (
-              <motion.button
-                key={link.label}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 + 0.1, duration: 0.6 }}
-                onClick={() => handleNav(link.href)}
-                className="font-serif text-black text-5xl font-light hover:text-black/60 transition-colors"
-              >
-                {link.label}
-              </motion.button>
-            ))}
+            <div className="flex flex-col items-center gap-12" onClick={(e) => e.stopPropagation()}>
+              {navLinks.map((link, i) => (
+                <motion.button
+                  key={link.label}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 + 0.1, duration: 0.6 }}
+                  onClick={() => handleNav(link.href)}
+                  className="font-serif text-obsidian text-5xl font-light hover:text-obsidian/60 transition-colors"
+                >
+                  {link.label}
+                </motion.button>
+              ))}
+            </div>
           </motion.div>
 
         )}

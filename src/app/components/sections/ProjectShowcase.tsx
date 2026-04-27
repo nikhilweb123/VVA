@@ -4,6 +4,7 @@ import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useInView } from "../../hooks/useInView";
+import Link from "next/link";
 
 export interface Project {
   id: string;
@@ -13,6 +14,7 @@ export interface Project {
   year: string;
   src: string;
   description: string;
+  featured?: boolean;
 }
 
 interface ProjectCardProps {
@@ -100,36 +102,68 @@ function ProjectCard({ project, index }: ProjectCardProps) {
         <p className="font-sans text-black/60 text-xs tracking-wide mb-6">{project.location}</p>
         <hr className="border-black/10 mb-6" />
         <p className="font-sans text-black/60 text-sm leading-relaxed mb-10 md:text-2xl">{project.description}</p>
-        <a
-          href="#"
+        <Link
+          href={`/projects/${project.id}`}
           className="nav-link font-sans text-black text-xs tracking-ultra uppercase inline-flex items-center gap-3 group w-fit"
         >
           View Project
           <span className="block w-8 h-px bg-black transition-all duration-500 group-hover:w-14" />
-        </a>
+        </Link>
       </motion.div>
 
     </div>
   );
 }
 
-export default function ProjectShowcase() {
+export default function ProjectShowcase({ allProjects = false }: { allProjects?: boolean }) {
   const { ref: titleRef, inView: titleInView } = useInView();
+  const [allData, setAllData] = useState<Project[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [categories, setCategories] = useState<{ id: string, name: string }[]>([]);
+  const [activeCategory, setActiveCategory] = useState("All");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/projects')
-      .then(res => res.json())
-      .then(data => {
-        setProjects(data);
+    const fetchData = async () => {
+      try {
+        const [projRes, catRes] = await Promise.all([
+          fetch('/api/projects'),
+          fetch('/api/categories')
+        ]);
+
+        const projData = await projRes.json();
+        const catData = await catRes.json();
+
+        setAllData(projData);
+        setCategories([{ id: "all", name: "All" }, ...catData]);
+
+        let initial = projData;
+        if (!allProjects) {
+          initial = projData.filter((p: Project) => p.featured === true);
+        }
+        setProjects(initial);
+      } catch (err) {
+        console.error('Failed to fetch data', err);
+      } finally {
         setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch projects', err);
-        setLoading(false);
-      });
-  }, []);
+      }
+    };
+
+    fetchData();
+  }, [allProjects]);
+
+  useEffect(() => {
+    let filtered = allData;
+    if (!allProjects) {
+      filtered = filtered.filter((p: Project) => p.featured === true);
+    }
+
+    if (activeCategory !== "All") {
+      filtered = filtered.filter((p: Project) => p.category === activeCategory);
+    }
+
+    setProjects(filtered);
+  }, [activeCategory, allData, allProjects]);
 
   return (
     <section id="projects" className="bg-obsidian py-24">
@@ -155,6 +189,28 @@ export default function ProjectShowcase() {
       </div>
 
       <hr className="hr-thin mx-8 md:mx-16 mb-0" />
+
+      {/* Category Filter */}
+      {allProjects && (
+        <div className="px-8 md:px-16 py-8 flex flex-wrap gap-x-8 gap-y-4">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.name)}
+              className={`font-sans text-[10px] tracking-ultra uppercase transition-all duration-300 relative py-2 ${activeCategory === cat.name ? "text-ivory" : "text-ash hover:text-ivory"
+                }`}
+            >
+              {cat.name}
+              {activeCategory === cat.name && (
+                <motion.div
+                  layoutId="activeCategory"
+                  className="absolute bottom-0 left-0 right-0 h-px bg-ivory"
+                />
+              )}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Projects */}
       <div className="divide-y divide-bone/10 min-h-[50vh]">

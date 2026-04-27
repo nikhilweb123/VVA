@@ -3,27 +3,32 @@ import project1 from "@/assets/project-1.jpg";
 import project2 from "@/assets/project-2.jpg";
 import project3 from "@/assets/project-3.jpg";
 import project4 from "@/assets/project-4.jpg";
+import Link from "next/link";
 
 const projects = [
   {
+    id: "1",
     image: project1,
     title: "A Sleek Vision of\nModern Commerce",
     location: "Manesar",
     category: "Commercial",
   },
   {
+    id: "2",
     image: project2,
     title: "Merging Modernity with\nCultural Heritage",
     location: "Amritsar",
     category: "Commercial",
   },
   {
+    id: "3",
     image: project3,
     title: "Industrial Design \nwith Precision",
     location: "Greater Noida",
     category: "Industrial",
   },
   {
+    id: "4",
     image: project4,
     title: "Strategic Planning for\nSustainable Living",
     location: "Bengaluru",
@@ -65,9 +70,10 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
   const parallaxRef = useParallax(0.08);
 
   return (
-    <div
+    <Link
+      href={`/projects/${project.id}`}
       ref={ref}
-      className={`relative h-[70vh] md:h-screen overflow-hidden cursor-pointer group reveal-scale ${isRevealed ? "revealed" : ""
+      className={`relative block h-[70vh] md:h-screen overflow-hidden cursor-pointer group reveal-scale ${isRevealed ? "revealed" : ""
         }`}
       style={{ transitionDelay: `${index * 0.1}s` }}
     >
@@ -91,7 +97,7 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
         </h3>
         <p className="text-body text-muted-foreground text-sm">{project.location}</p>
       </div>
-    </div>
+    </Link>
   );
 };
 
