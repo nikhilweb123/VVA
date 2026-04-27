@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1",
+    "name": "Commercial"
+  },
+  {
+    "id": "2",
+    "name": "Industrial"
+  },
+  {
+    "id": "3",
+    "name": "Master Planning"
+  }
+]

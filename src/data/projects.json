@@ -1,0 +1,74 @@
+[
+  {
+    "id": "1",
+    "title": "Golden Square",
+    "location": "Manesar",
+    "category": "Commercial",
+    "year": "2024",
+    "src": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1920&q=85",
+    "description": "65,000 sqft commercial development with a sleek black and grey façade. Expansive glass surfaces paired with warm wooden accents and green terraces enhance the environment.",
+    "featured": true,
+    "client": "Golden Group",
+    "area": "65,000 sqft",
+    "challenge": "Integrating a high-density commercial program within a restricted urban footprint while maintaining a sense of openness and connectivity.",
+    "solution": "We utilized a staggered terrace system and vertical green walls to create 'pockets of air' within the structure, coupled with high-performance glass to maximize natural light.",
+    "gallery": [
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80",
+      "https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&q=80"
+    ]
+  },
+  {
+    "id": "2",
+    "title": "Mall Extension",
+    "location": "Amritsar",
+    "category": "Commercial",
+    "year": "2023",
+    "src": "https://images.unsplash.com/photo-1460317442991-0ec209397118?w=1920&q=85",
+    "description": "73,000 sqft mall extension blending modern and cultural design. Façade features off-white panels, bronze accents, and traditional jali screens with a grand double-height entry porch.",
+    "featured": true,
+    "client": "Amritsar Retail Hub",
+    "area": "73,000 sqft",
+    "challenge": "Extending an existing structure while respecting the historical context of Amritsar without creating a jarring architectural disconnect.",
+    "solution": "Modernizing traditional Jali patterns into laser-cut bronze screens that provide shade and cultural continuity, while using off-white panels to provide a clean, contemporary backdrop.",
+    "gallery": [
+      "https://images.unsplash.com/photo-1519501025264-65ba15a82390?w=1200&q=80",
+      "https://images.unsplash.com/photo-1554435493-93422e8220c8?w=1200&q=80"
+    ]
+  },
+  {
+    "id": "3",
+    "title": "Lal Sweets",
+    "location": "Greater Noida",
+    "category": "Industrial",
+    "year": "2023",
+    "src": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=85",
+    "description": "Modern industrial-commercial facility with a strong architectural identity. Vertical fins and bold frames define the exterior structure, designed for efficiency and functional excellence.",
+    "featured": true,
+    "client": "Lal Foods Pvt Ltd",
+    "area": "45,000 sqft",
+    "challenge": "Transforming a purely functional industrial space into a brand-defining architectural statement.",
+    "solution": "The use of bold vertical fins creates a dynamic play of light and shadow throughout the day, effectively 'branding' the building through its unique form.",
+    "gallery": [
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=80",
+      "https://images.unsplash.com/photo-1516937941344-00b4e0337589?w=1200&q=80"
+    ]
+  },
+  {
+    "id": "4",
+    "title": "Village Wave Group",
+    "location": "Bengaluru",
+    "category": "Master Planning",
+    "year": "2024",
+    "src": "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1920&q=85",
+    "description": "Large-scale plotted development with strategic master planning. Focus on optimized land use and organized infrastructure to create balanced and sustainable urban environments.",
+    "featured": true,
+    "client": "Wave Group",
+    "area": "120 Acres",
+    "challenge": "Balancing high-density residential requirements with significant green cover and community spaces.",
+    "solution": "A central 'Green Spine' was designed to connect all residential clusters, ensuring every plot is within a 2-minute walk of a park.",
+    "gallery": [
+      "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&q=80",
+      "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?w=1200&q=80"
+    ]
+  }
+]
