@@ -1,10 +1,20 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import dbConnect from '@/lib/db';
 import Enquiry from '@/models/Enquiry';
 
 export const dynamic = 'force-dynamic';
 
+async function isAuthenticated() {
+  const cookieStore = await cookies();
+  return cookieStore.get('admin_session')?.value === 'true';
+}
+
 export async function GET() {
+  if (!await isAuthenticated()) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     await dbConnect();
     const enquiries = await Enquiry.find({}).sort({ createdAt: -1 });

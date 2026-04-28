@@ -1,24 +1,36 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
+import { cookies } from 'next/headers';
+import dbConnect from '@/lib/db';
+import Category from '@/models/Category';
 
-const dataFilePath = path.join(process.cwd(), 'src', 'data', 'categories.json');
+export const dynamic = 'force-dynamic';
+
+async function isAuthenticated() {
+  const cookieStore = await cookies();
+  return cookieStore.get('admin_session')?.value === 'true';
+}
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  _request: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
+  if (!await isAuthenticated()) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
-    const { id } = params;
-    const fileContent = await fs.readFile(dataFilePath, 'utf8');
-    const categories = JSON.parse(fileContent);
+    await dbConnect();
+    const { id } = await context.params;
 
-    const filteredCategories = categories.filter((cat: any) => cat.id !== id);
+    const category = await Category.findByIdAndDelete(id);
 
-    await fs.writeFile(dataFilePath, JSON.stringify(filteredCategories, null, 2), 'utf8');
+    if (!category) {
+      return NextResponse.json({ error: 'Category not found' }, { status: 404 });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    console.error('Error deleting category:', error);
     return NextResponse.json({ error: 'Failed to delete category' }, { status: 500 });
   }
 }

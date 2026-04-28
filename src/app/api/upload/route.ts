@@ -1,10 +1,20 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import fs from 'fs/promises';
 import path from 'path';
 
 export const dynamic = 'force-dynamic';
 
+async function isAuthenticated() {
+  const cookieStore = await cookies();
+  return cookieStore.get('admin_session')?.value === 'true';
+}
+
 export async function POST(request: Request) {
+  if (!await isAuthenticated()) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;

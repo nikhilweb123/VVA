@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import dbConnect from '@/lib/db';
 import Category from '@/models/Category';
 
 export const dynamic = 'force-dynamic';
+
+async function isAuthenticated() {
+  const cookieStore = await cookies();
+  return cookieStore.get('admin_session')?.value === 'true';
+}
 
 export async function GET() {
   try {
@@ -16,6 +22,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (!await isAuthenticated()) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     await dbConnect();
     const body = await request.json();

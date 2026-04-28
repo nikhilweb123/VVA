@@ -70,34 +70,37 @@ const ProjectCard = ({ project, index }: { project: typeof projects[0]; index: n
   const parallaxRef = useParallax(0.08);
 
   return (
-    <Link
-      href={`/projects/${project.id}`}
+    <div
       ref={ref}
-      className={`relative block h-[70vh] md:h-screen overflow-hidden cursor-pointer group reveal-scale ${isRevealed ? "revealed" : ""
-        }`}
+      className={`reveal-scale ${isRevealed ? "revealed" : ""}`}
       style={{ transitionDelay: `${index * 0.1}s` }}
     >
-      <div ref={parallaxRef} className="absolute inset-[-10%] w-[120%] h-[120%]">
-        <img
-          src={project.image.src}
-          alt={project.location}
-          loading="lazy"
-          className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
-          width={1920}
-          height={1200}
-        />
-      </div>
+      <Link
+        href={`/projects/${project.id}`}
+        className="relative block h-[70vh] md:h-screen overflow-hidden cursor-pointer group"
+      >
+        <div ref={parallaxRef} className="absolute inset-[-10%] w-[120%] h-[120%]">
+          <img
+            src={project.image.src}
+            alt={project.location}
+            loading="lazy"
+            className="w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
+            width={1920}
+            height={1200}
+          />
+        </div>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
 
-      <div className="absolute inset-0 flex flex-col justify-end section-padding pb-12 md:pb-20">
-        <span className="text-label text-primary mb-3">{project.category}</span>
-        <h3 className="heading-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground whitespace-pre-line mb-3">
-          {project.title}
-        </h3>
-        <p className="text-body text-muted-foreground text-sm">{project.location}</p>
-      </div>
-    </Link>
+        <div className="absolute inset-0 flex flex-col justify-end section-padding pb-12 md:pb-20">
+          <span className="text-label text-primary mb-3">{project.category}</span>
+          <h3 className="heading-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-foreground whitespace-pre-line mb-3">
+            {project.title}
+          </h3>
+          <p className="text-body text-muted-foreground text-sm">{project.location}</p>
+        </div>
+      </Link>
+    </div>
   );
 };
 

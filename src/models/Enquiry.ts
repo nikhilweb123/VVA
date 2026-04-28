@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from 'mongoose';
+import { Schema, model, models } from 'mongoose';
 
 export interface IEnquiry {
   name: string;
@@ -19,7 +19,8 @@ const EnquirySchema = new Schema<IEnquiry>(
     timestamps: true,
     toJSON: {
       virtuals: true,
-      transform: (doc, ret) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      transform: (_doc: any, ret: any) => {
         ret.id = ret._id.toString();
         delete ret._id;
         delete ret.__v;
