@@ -27,6 +27,9 @@ yarn-error.log*
 .env.production.local
 .env*.local
 
+# Project credentials (never commit)
+CREDENTIALS.md
+
 # IDEs and Tools
 .idea/
 .vscode/

@@ -1,36 +1,74 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Project } from "../../components/sections/ProjectShowcase";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Category {
   id: string;
   name: string;
 }
 
+interface FullProject extends Project {
+  client?: string;
+  area?: string;
+  challenge?: string;
+  solution?: string;
+  gallery?: string[];
+}
+
+const emptyForm: Omit<FullProject, "id"> = {
+  title: "",
+  location: "",
+  category: "",
+  year: new Date().getFullYear().toString(),
+  src: "",
+  description: "",
+  featured: false,
+  client: "",
+  area: "",
+  challenge: "",
+  solution: "",
+  gallery: [],
+};
+
 export default function AdminProjects() {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<FullProject[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string>("");
-  const [uploading, setUploading] = useState(false);
-  const [imageInputMode, setImageInputMode] = useState<'url' | 'upload'>('url');
+  const [editingProject, setEditingProject] = useState<FullProject | null>(null);
+  const [form, setForm] = useState<Omit<FullProject, "id">>(emptyForm);
+  const [galleryInput, setGalleryInput] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [srcError, setSrcError] = useState(false);
+  const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+  const srcDebounce = useRef<NodeJS.Timeout | null>(null);
+
+  const showToast = (msg: string, type: "success" | "error" = "success") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
+  };
 
   const fetchProjects = async () => {
     setLoading(true);
-    const res = await fetch("/api/projects");
-    const data = await res.json();
-    setProjects(data);
-    setLoading(false);
+    try {
+      const res = await fetch("/api/projects");
+      const data = await res.json();
+      setProjects(Array.isArray(data) ? data : []);
+    } catch {
+      showToast("Failed to load projects", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchCategories = async () => {
-    const res = await fetch("/api/categories");
-    const data = await res.json();
-    setCategories(data);
+    try {
+      const res = await fetch("/api/categories");
+      const data = await res.json();
+      setCategories(Array.isArray(data) ? data : []);
+    } catch {}
   };
 
   useEffect(() => {
@@ -38,338 +76,467 @@ export default function AdminProjects() {
     fetchCategories();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this project?")) return;
-    await fetch(`/api/projects/${id}`, { method: "DELETE" });
-    fetchProjects();
-  };
-
-  const handleToggleFeatured = async (project: Project) => {
-    const updatedProject = { ...project, featured: !project.featured };
-    await fetch(`/api/projects/${project.id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedProject),
-    });
-    fetchProjects();
-  };
-
-  const openForm = (project?: Project) => {
+  const openForm = (project?: FullProject) => {
     if (project) {
       setEditingProject(project);
-      setImagePreview(project.src);
+      setForm({
+        title: project.title,
+        location: project.location,
+        category: project.category,
+        year: project.year,
+        src: project.src,
+        description: project.description,
+        featured: project.featured ?? false,
+        client: project.client ?? "",
+        area: project.area ?? "",
+        challenge: project.challenge ?? "",
+        solution: project.solution ?? "",
+        gallery: project.gallery ?? [],
+      });
+      setGalleryInput((project.gallery ?? []).join(", "));
     } else {
       setEditingProject(null);
-      setImagePreview("");
+      setForm(emptyForm);
+      setGalleryInput("");
     }
-    setImageInputMode('url');
+    setSrcError(false);
     setIsModalOpen(true);
   };
 
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const payload: any = Object.fromEntries(formData.entries());
-
-    // Convert checkbox value to boolean
-    payload.featured = formData.get('featured') === 'on';
-
-    // Parse gallery string into array
-    if (payload.gallery) {
-      payload.gallery = payload.gallery.split(',').map((s: string) => s.trim()).filter((s: string) => s !== "");
-    }
-
-    if (editingProject) {
-      await fetch(`/api/projects/${editingProject.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-    } else {
-      await fetch("/api/projects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-    }
-
+  const closeModal = () => {
     setIsModalOpen(false);
-    setImagePreview("");
-    fetchProjects();
+    setEditingProject(null);
+    setSrcError(false);
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    setForm(prev => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
 
-    setUploading(true);
+    if (name === "src") {
+      setSrcError(false);
+      if (srcDebounce.current) clearTimeout(srcDebounce.current);
+      srcDebounce.current = setTimeout(() => {
+        if (value) {
+          const img = new Image();
+          img.onload = () => setSrcError(false);
+          img.onerror = () => setSrcError(true);
+          img.src = value;
+        }
+      }, 600);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.src) return;
+
+    setSaving(true);
+    const payload = {
+      ...form,
+      gallery: galleryInput
+        .split(",")
+        .map(s => s.trim())
+        .filter(Boolean),
+    };
 
     try {
-      const uploadFormData = new FormData();
-      uploadFormData.append('file', file);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: uploadFormData,
+      const url = editingProject ? `/api/projects/${editingProject.id}` : "/api/projects";
+      const method = editingProject ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        setImagePreview(data.url);
-        // We'll store this in a hidden input or state
-        (e.target.form as HTMLFormElement)?.querySelector('input[name="src"]')?.setAttribute('value', data.url);
-      } else {
-        alert(data.error || 'Upload failed');
-      }
-    } catch (error) {
-      console.error('Upload error:', error);
-      alert('Failed to upload image');
+      if (!res.ok) throw new Error();
+      showToast(editingProject ? "Project updated" : "Project created");
+      closeModal();
+      fetchProjects();
+    } catch {
+      showToast("Failed to save project", "error");
     } finally {
-      setUploading(false);
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this project? This cannot be undone.")) return;
+    try {
+      await fetch(`/api/projects/${id}`, { method: "DELETE" });
+      showToast("Project deleted");
+      fetchProjects();
+    } catch {
+      showToast("Failed to delete project", "error");
+    }
+  };
+
+  const handleToggleFeatured = async (project: FullProject) => {
+    try {
+      await fetch(`/api/projects/${project.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...project, featured: !project.featured }),
+      });
+      fetchProjects();
+    } catch {
+      showToast("Failed to update project", "error");
     }
   };
 
   return (
-    <div className="min-h-screen bg-obsidian text-ivory py-20 px-8 flex flex-col items-center">
-      <div className="w-full max-w-6xl">
-        <div className="flex justify-between items-center mb-12">
-          <h1 className="font-serif text-5xl font-light">Project Manager</h1>
+    <div className="min-h-screen bg-obsidian text-ivory py-20 px-6 md:px-12">
+      {/* Toast */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed top-6 right-6 z-[100] px-6 py-3 text-xs font-sans tracking-ultra uppercase shadow-lg ${
+              toast.type === "success" ? "bg-ivory text-obsidian" : "bg-red-600 text-white"
+            }`}
+          >
+            {toast.msg}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+          <div>
+            <h1 className="font-serif text-5xl font-light mb-1">Project Manager</h1>
+            <p className="font-sans text-ash text-xs tracking-ultra uppercase">
+              {projects.length} project{projects.length !== 1 ? "s" : ""} total
+            </p>
+          </div>
           <button
             onClick={() => openForm()}
-            className="nav-link font-sans text-xs tracking-ultra uppercase border border-ivory px-6 py-3 hover:bg-ivory hover:text-obsidian transition-colors"
+            className="font-sans text-xs tracking-ultra uppercase border border-ivory px-6 py-3 hover:bg-ivory hover:text-obsidian transition-colors w-fit"
           >
-            Add New Project
+            + Add New Project
           </button>
         </div>
 
+        {/* Image URL tip banner */}
+        <div className="mb-8 border border-ivory/10 bg-ivory/5 px-6 py-4 flex items-start gap-4">
+          <span className="text-ivory/40 text-lg mt-0.5">💡</span>
+          <div>
+            <p className="font-sans text-ivory/80 text-xs tracking-wide mb-1">
+              <span className="text-ivory font-semibold">Images use URLs.</span> Upload your photos to{" "}
+              <span className="text-ivory underline">Cloudinary.com</span> (free) or{" "}
+              <span className="text-ivory underline">imgbb.com</span> (free), then paste the image link here.
+            </p>
+            <p className="font-sans text-ivory/40 text-[10px] tracking-wide">
+              Cloudinary: cloudinary.com → Media Library → Upload → right-click image → Copy URL
+            </p>
+          </div>
+        </div>
+
+        {/* Projects Table */}
         {loading ? (
-          <p className="font-sans text-ash text-xs tracking-ultra uppercase animate-pulse">Loading...</p>
+          <div className="flex items-center justify-center py-32">
+            <p className="font-sans text-ash text-xs tracking-ultra uppercase animate-pulse">Loading projects...</p>
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="border border-dashed border-ivory/20 py-24 text-center">
+            <p className="font-serif text-2xl text-ivory/40 mb-4">No projects yet</p>
+            <p className="font-sans text-ash text-xs tracking-ultra uppercase mb-8">Add your first project to get started</p>
+            <button
+              onClick={() => openForm()}
+              className="font-sans text-xs tracking-ultra uppercase border border-ivory px-8 py-3 hover:bg-ivory hover:text-obsidian transition-colors"
+            >
+              + Add Project
+            </button>
+          </div>
         ) : (
           <div className="w-full overflow-x-auto border border-ivory/20">
             <table className="w-full text-left font-sans text-sm">
-              <thead className="bg-[#f2f2f2]">
+              <thead className="border-b border-ivory/20">
                 <tr>
-                  <th className="py-4 px-6 font-normal text-xs tracking-ultra uppercase border-b border-ivory/20 text-ash w-32">Image</th>
-                  <th className="py-4 px-6 font-normal text-xs tracking-ultra uppercase border-b border-ivory/20 text-ash">Title</th>
-                  <th className="py-4 px-6 font-normal text-xs tracking-ultra uppercase border-b border-ivory/20 text-ash">Category</th>
-                  <th className="py-4 px-6 font-normal text-xs tracking-ultra uppercase border-b border-ivory/20 text-ash">Year</th>
-                  <th className="py-4 px-6 font-normal text-xs tracking-ultra uppercase border-b border-ivory/20 text-ash text-center">Main Page</th>
-                  <th className="py-4 px-6 font-normal text-xs tracking-ultra uppercase border-b border-ivory/20 text-ash text-right">Actions</th>
+                  <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash w-28">Image</th>
+                  <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash">Title</th>
+                  <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash hidden md:table-cell">Category</th>
+                  <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash hidden md:table-cell">Year</th>
+                  <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash text-center">Featured</th>
+                  <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ivory/10">
                 {projects.map(p => (
-                  <tr key={p.id} className="hover:bg-black/5 transition-colors">
+                  <tr key={p.id} className="hover:bg-white/5 transition-colors">
                     <td className="py-4 px-6">
-                      <img src={p.src} alt={p.title} className="w-20 h-12 object-cover" />
+                      {p.src ? (
+                        <img
+                          src={p.src}
+                          alt={p.title}
+                          className="w-20 h-12 object-cover bg-ivory/10"
+                          onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+                        />
+                      ) : (
+                        <div className="w-20 h-12 bg-ivory/10 flex items-center justify-center">
+                          <span className="text-ivory/20 text-[10px]">No img</span>
+                        </div>
+                      )}
                     </td>
-                    <td className="py-4 px-6 font-serif text-xl">{p.title}</td>
-                    <td className="py-4 px-6 text-ash">{p.category}</td>
-                    <td className="py-4 px-6 text-ash">{p.year}</td>
+                    <td className="py-4 px-6">
+                      <p className="font-serif text-lg text-ivory">{p.title}</p>
+                      <p className="text-ash text-[10px] tracking-wide mt-0.5 md:hidden">{p.category} · {p.year}</p>
+                    </td>
+                    <td className="py-4 px-6 text-ash hidden md:table-cell">{p.category}</td>
+                    <td className="py-4 px-6 text-ash hidden md:table-cell">{p.year}</td>
                     <td className="py-4 px-6 text-center">
                       <button
                         onClick={() => handleToggleFeatured(p)}
-                        className={`px-4 py-2 text-xs uppercase tracking-wider transition-all rounded ${p.featured
-                          ? 'bg-ivory text-obsidian hover:bg-ivory/90'
-                          : 'bg-obsidian text-ivory border border-ivory/40 hover:border-ivory'
-                          }`}
+                        title="Toggle featured on home page"
+                        className={`px-4 py-1.5 text-[10px] uppercase tracking-wider transition-all ${
+                          p.featured
+                            ? "bg-ivory text-obsidian"
+                            : "bg-transparent text-ivory/40 border border-ivory/20 hover:border-ivory/60"
+                        }`}
                       >
-                        {p.featured ? 'Yes' : 'No'}
+                        {p.featured ? "Yes" : "No"}
                       </button>
                     </td>
-                    <td className="py-4 px-6 text-right">
-                      <button onClick={() => openForm(p)} className="text-xs uppercase tracking-wider hover:underline mr-4">Edit</button>
-                      <button onClick={() => handleDelete(p.id)} className="text-xs uppercase tracking-wider text-red-600 hover:underline">Delete</button>
+                    <td className="py-4 px-6 text-right whitespace-nowrap">
+                      <button
+                        onClick={() => openForm(p)}
+                        className="text-[10px] uppercase tracking-wider text-ivory hover:underline mr-4"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p.id)}
+                        className="text-[10px] uppercase tracking-wider text-red-400 hover:underline"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
-                {projects.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="py-8 text-center text-ash text-xs tracking-ultra uppercase">No projects found.</td>
-                  </tr>
-                )}
               </tbody>
             </table>
           </div>
         )}
       </div>
 
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ivory/50 p-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-obsidian border border-ivory/20 w-full max-w-2xl max-h-[90vh] overflow-y-auto p-8 md:p-12 shadow-2xl"
-          >
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="font-serif text-3xl font-light">{editingProject ? "Edit Project" : "New Project"}</h2>
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="text-ivory text-xl transition-transform hover:scale-110"
-              >
-                &times;
-              </button>
-            </div>
-
-            <form onSubmit={handleFormSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="flex flex-col">
-                  <label className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase mb-2">Title</label>
-                  <input type="text" name="title" defaultValue={editingProject?.title} required className="bg-transparent border-b border-ivory/20 focus:border-ivory pb-2 text-ivory font-sans outline-none" />
-                </div>
-                <div className="flex flex-col">
-                  <label className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase mb-2">Location</label>
-                  <input type="text" name="location" defaultValue={editingProject?.location} required className="bg-transparent border-b border-ivory/20 focus:border-ivory pb-2 text-ivory font-sans outline-none" />
-                </div>
-                <div className="flex flex-col">
-                  <label className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase mb-2">Category</label>
-                  <select
-                    name="category"
-                    defaultValue={editingProject?.category}
-                    required
-                    className="bg-transparent border-b border-ivory/20 focus:border-ivory pb-2 text-ivory font-sans outline-none appearance-none"
-                  >
-                    <option value="" className="bg-obsidian text-ivory">Select Category</option>
-                    {categories.map(cat => (
-                      <option key={cat.id} value={cat.name} className="bg-obsidian text-ivory">
-                        {cat.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex flex-col">
-                  <label className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase mb-2">Year</label>
-                  <input type="text" name="year" defaultValue={editingProject?.year} required className="bg-transparent border-b border-ivory/20 focus:border-ivory pb-2 text-ivory font-sans outline-none" />
-                </div>
-                <div className="flex flex-col">
-                  <label className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase mb-2">Client</label>
-                  <input type="text" name="client" defaultValue={(editingProject as any)?.client} className="bg-transparent border-b border-ivory/20 focus:border-ivory pb-2 text-ivory font-sans outline-none" />
-                </div>
-                <div className="flex flex-col">
-                  <label className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase mb-2">Area</label>
-                  <input type="text" name="area" defaultValue={(editingProject as any)?.area} className="bg-transparent border-b border-ivory/20 focus:border-ivory pb-2 text-ivory font-sans outline-none" />
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="flex flex-col">
-                  <label className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase mb-2">Challenge</label>
-                  <textarea name="challenge" defaultValue={(editingProject as any)?.challenge} rows={3} className="bg-transparent border-b border-ivory/20 focus:border-ivory pb-2 text-ivory font-sans outline-none resize-none" />
-                </div>
-                <div className="flex flex-col">
-                  <label className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase mb-2">Solution</label>
-                  <textarea name="solution" defaultValue={(editingProject as any)?.solution} rows={3} className="bg-transparent border-b border-ivory/20 focus:border-ivory pb-2 text-ivory font-sans outline-none resize-none" />
-                </div>
-              </div>
-
-              <div className="flex flex-col">
-                <label className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase mb-2">Image</label>
-
-                {/* Toggle between URL and Upload */}
-                <div className="flex gap-4 mb-4">
-                  <button
-                    type="button"
-                    onClick={() => setImageInputMode('url')}
-                    className={`px-4 py-2 text-xs uppercase tracking-wider transition-all ${imageInputMode === 'url'
-                      ? 'bg-ivory text-obsidian'
-                      : 'bg-transparent text-ivory border border-ivory/40'
-                      }`}
-                  >
-                    URL
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setImageInputMode('upload')}
-                    className={`px-4 py-2 text-xs uppercase tracking-wider transition-all ${imageInputMode === 'upload'
-                      ? 'bg-ivory text-obsidian'
-                      : 'bg-transparent text-ivory border border-ivory/40'
-                      }`}
-                  >
-                    Upload
-                  </button>
-                </div>
-
-                {/* URL Input */}
-                {imageInputMode === 'url' && (
-                  <input
-                    type="url"
-                    name="src"
-                    defaultValue={editingProject?.src}
-                    required
-                    onChange={(e) => setImagePreview(e.target.value)}
-                    className="bg-transparent border-b border-ivory/20 focus:border-ivory pb-2 text-ivory font-sans outline-none"
-                  />
-                )}
-
-                {/* File Upload */}
-                {imageInputMode === 'upload' && (
-                  <div className="space-y-4">
-                    <label className="block cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        disabled={uploading}
-                        className="hidden"
-                        id="image-upload"
-                      />
-                      <div className="border-2 border-dashed border-ivory/30 hover:border-ivory/60 transition-colors px-6 py-8 text-center">
-                        {uploading ? (
-                          <p className="font-sans text-ivory/60 text-xs tracking-ultra uppercase animate-pulse">Uploading...</p>
-                        ) : (
-                          <div>
-                            <p className="font-sans text-ivory text-sm mb-2">Click to upload image</p>
-                            <p className="font-sans text-ivory/40 text-[10px]">JPEG, PNG, WebP, GIF (Max 5MB)</p>
-                          </div>
-                        )}
-                      </div>
-                    </label>
-                    <input type="hidden" name="src" value={imagePreview} />
-                  </div>
-                )}
-
-                {/* Image Preview */}
-                {imagePreview && (
-                  <div className="mt-4">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-48 object-cover border border-ivory/20"
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="flex flex-col">
-                <label className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase mb-2">Description</label>
-                <textarea name="description" defaultValue={editingProject?.description} required rows={4} className="bg-transparent border-b border-ivory/20 focus:border-ivory pb-2 text-ivory font-sans outline-none resize-none" />
-              </div>
-
-              <div className="flex flex-col">
-                <label className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase mb-2">Gallery Images (Comma separated URLs)</label>
-                <textarea name="gallery" defaultValue={(editingProject as any)?.gallery?.join(', ')} rows={2} className="bg-transparent border-b border-ivory/20 focus:border-ivory pb-2 text-ivory font-sans outline-none resize-none" />
-              </div>
-
-              <div className="flex items-center gap-4 pt-4">
-                <label className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase">Show on Main Page</label>
-                <input
-                  type="checkbox"
-                  name="featured"
-                  defaultChecked={editingProject?.featured || false}
-                  className="w-5 h-5 cursor-pointer accent-ivory"
-                />
-              </div>
-
-              <div className="pt-4 flex justify-end">
-                <button type="submit" className="font-sans text-xs tracking-ultra uppercase border border-ivory bg-ivory text-obsidian px-8 py-3 hover:bg-transparent hover:text-ivory transition-colors">
-                  Save Project
+      {/* Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.97, y: 16 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.97, y: 16 }}
+              transition={{ duration: 0.2 }}
+              className="bg-obsidian border border-ivory/20 w-full max-w-3xl max-h-[92vh] overflow-y-auto shadow-2xl"
+            >
+              {/* Modal Header */}
+              <div className="flex justify-between items-center px-8 py-6 border-b border-ivory/10 sticky top-0 bg-obsidian z-10">
+                <h2 className="font-serif text-2xl font-light">
+                  {editingProject ? "Edit Project" : "New Project"}
+                </h2>
+                <button
+                  onClick={closeModal}
+                  className="text-ivory/40 hover:text-ivory text-2xl leading-none transition-colors"
+                >
+                  &times;
                 </button>
               </div>
-            </form>
-          </motion.div>
-        </div>
-      )}
+
+              <form onSubmit={handleSubmit} className="px-8 py-8 space-y-8">
+
+                {/* Basic Info */}
+                <div>
+                  <p className="font-sans text-[10px] tracking-ultra uppercase text-ivory/30 mb-4">Basic Information</p>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <Field label="Title *">
+                      <input
+                        type="text" name="title" required
+                        value={form.title} onChange={handleChange}
+                        className={inputCls}
+                        placeholder="e.g. The Glass House"
+                      />
+                    </Field>
+                    <Field label="Location *">
+                      <input
+                        type="text" name="location" required
+                        value={form.location} onChange={handleChange}
+                        className={inputCls}
+                        placeholder="e.g. Mumbai, India"
+                      />
+                    </Field>
+                    <Field label="Category *">
+                      <select
+                        name="category" required
+                        value={form.category} onChange={handleChange}
+                        className={inputCls + " appearance-none"}
+                      >
+                        <option value="" className="bg-obsidian">Select category</option>
+                        {categories.map(c => (
+                          <option key={c.id} value={c.name} className="bg-obsidian">{c.name}</option>
+                        ))}
+                      </select>
+                    </Field>
+                    <Field label="Year *">
+                      <input
+                        type="text" name="year" required
+                        value={form.year} onChange={handleChange}
+                        className={inputCls}
+                        placeholder="e.g. 2024"
+                      />
+                    </Field>
+                    <Field label="Client">
+                      <input
+                        type="text" name="client"
+                        value={form.client} onChange={handleChange}
+                        className={inputCls}
+                        placeholder="e.g. Tata Group"
+                      />
+                    </Field>
+                    <Field label="Area">
+                      <input
+                        type="text" name="area"
+                        value={form.area} onChange={handleChange}
+                        className={inputCls}
+                        placeholder="e.g. 3,200 sq ft"
+                      />
+                    </Field>
+                  </div>
+                </div>
+
+                {/* Main Image */}
+                <div>
+                  <p className="font-sans text-[10px] tracking-ultra uppercase text-ivory/30 mb-4">Main Image</p>
+                  <Field label="Image URL *">
+                    <input
+                      type="url" name="src" required
+                      value={form.src} onChange={handleChange}
+                      className={inputCls + (srcError ? " border-red-500" : "")}
+                      placeholder="https://res.cloudinary.com/... or https://i.ibb.co/..."
+                    />
+                  </Field>
+                  {srcError && (
+                    <p className="text-red-400 text-[10px] font-sans tracking-wide mt-2">
+                      ⚠ Could not load image from this URL. Check the link is public and direct.
+                    </p>
+                  )}
+                  {!srcError && form.src && (
+                    <div className="mt-4">
+                      <p className="font-sans text-[10px] tracking-ultra uppercase text-ivory/30 mb-2">Preview</p>
+                      <img
+                        src={form.src}
+                        alt="Preview"
+                        className="w-full h-52 object-cover border border-ivory/20"
+                        onError={() => setSrcError(true)}
+                      />
+                    </div>
+                  )}
+                  <p className="font-sans text-[10px] text-ivory/30 tracking-wide mt-3">
+                    Free image hosts: <span className="text-ivory/50">cloudinary.com</span> · <span className="text-ivory/50">imgbb.com</span> · <span className="text-ivory/50">unsplash.com (copy image address)</span>
+                  </p>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <p className="font-sans text-[10px] tracking-ultra uppercase text-ivory/30 mb-4">Description</p>
+                  <Field label="Project Description *">
+                    <textarea
+                      name="description" required rows={4}
+                      value={form.description} onChange={handleChange}
+                      className={inputCls + " resize-none"}
+                      placeholder="Brief description shown on the projects page..."
+                    />
+                  </Field>
+                </div>
+
+                {/* Details */}
+                <div>
+                  <p className="font-sans text-[10px] tracking-ultra uppercase text-ivory/30 mb-4">Project Details (shown on project detail page)</p>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <Field label="Challenge">
+                      <textarea
+                        name="challenge" rows={3}
+                        value={form.challenge} onChange={handleChange}
+                        className={inputCls + " resize-none"}
+                        placeholder="What was the design challenge?"
+                      />
+                    </Field>
+                    <Field label="Solution">
+                      <textarea
+                        name="solution" rows={3}
+                        value={form.solution} onChange={handleChange}
+                        className={inputCls + " resize-none"}
+                        placeholder="How was it solved?"
+                      />
+                    </Field>
+                  </div>
+                </div>
+
+                {/* Gallery */}
+                <div>
+                  <p className="font-sans text-[10px] tracking-ultra uppercase text-ivory/30 mb-4">Gallery</p>
+                  <Field label="Gallery Image URLs (comma separated)">
+                    <textarea
+                      rows={3}
+                      value={galleryInput}
+                      onChange={e => setGalleryInput(e.target.value)}
+                      className={inputCls + " resize-none"}
+                      placeholder="https://url1.jpg, https://url2.jpg, https://url3.jpg"
+                    />
+                  </Field>
+                  <p className="font-sans text-[10px] text-ivory/30 tracking-wide mt-2">
+                    Paste multiple image URLs separated by commas
+                  </p>
+                </div>
+
+                {/* Featured */}
+                <div className="flex items-center gap-4 pt-2">
+                  <input
+                    type="checkbox" name="featured" id="featured"
+                    checked={form.featured}
+                    onChange={handleChange}
+                    className="w-4 h-4 cursor-pointer accent-ivory"
+                  />
+                  <label htmlFor="featured" className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase cursor-pointer">
+                    Show on home page (Featured)
+                  </label>
+                </div>
+
+                {/* Actions */}
+                <div className="flex justify-end gap-4 pt-4 border-t border-ivory/10">
+                  <button
+                    type="button" onClick={closeModal}
+                    className="font-sans text-xs tracking-ultra uppercase border border-ivory/30 px-6 py-3 hover:border-ivory text-ivory/60 hover:text-ivory transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={saving || !form.src}
+                    className="font-sans text-xs tracking-ultra uppercase border border-ivory bg-ivory text-obsidian px-8 py-3 hover:bg-transparent hover:text-ivory transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    {saving ? "Saving..." : editingProject ? "Update Project" : "Create Project"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+const inputCls = "bg-transparent border-b border-ivory/20 focus:border-ivory pb-2 text-ivory font-sans outline-none w-full transition-colors placeholder:text-ivory/20";
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="font-sans text-ivory/50 text-[10px] tracking-ultra uppercase">{label}</label>
+      {children}
     </div>
   );
 }
