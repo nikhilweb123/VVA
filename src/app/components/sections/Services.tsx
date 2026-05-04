@@ -6,23 +6,43 @@ import { useInView } from "../../hooks/useInView";
 const servicesList = [
   {
     id: "01",
-    title: "Architecture",
-    description: "Creating visionary, functional, and sustainable structures that redefine spatial experiences and respond harmoniously to their contexts."
+    title: "Master Planning",
+    description: "Comprehensive master planning strategies that integrate community needs, ecological balance, and long-term urban viability."
   },
   {
     id: "02",
-    title: "Interiors",
-    description: "Crafting immersive interior environments that balance aesthetic elegance with intuitive flow, enhancing the way people live and work."
+    title: "Architectural Design",
+    description: "Creating visionary, functional, and sustainable structures that redefine spatial experiences and respond harmoniously to their contexts."
   },
   {
     id: "03",
-    title: "Masterplanning",
-    description: "Developing comprehensive, forward-looking urban strategies that integrate community needs, ecological balance, and long-term viability."
+    title: "Infrastructure Design Development",
+    description: "End-to-end infrastructure design and development ensuring seamless integration of technical systems with architectural vision."
   },
   {
     id: "04",
-    title: "Consultancy",
-    description: "Ensuring seamless execution from concept to completion through rigorous oversight, skilled coordination, and an unwavering commitment to quality."
+    title: "Landscape and Hardscape Design",
+    description: "Designing outdoor environments that harmoniously blend soft landscaping with hardscape elements to create cohesive, liveable spaces."
+  },
+  {
+    id: "05",
+    title: "Urban Spaces and Master Planning",
+    description: "Forward-looking urban design strategies that activate public spaces and shape thriving, connected communities."
+  },
+  {
+    id: "06",
+    title: "Workspace Interior",
+    description: "Crafting productive and inspiring workplace environments that balance aesthetic elegance with intuitive flow and functional efficiency."
+  },
+  {
+    id: "07",
+    title: "Hospitality Interior",
+    description: "Designing immersive hospitality spaces that create memorable guest experiences through thoughtful detailing and refined aesthetics."
+  },
+  {
+    id: "08",
+    title: "Retail & Public Space Interior",
+    description: "Creating engaging retail and public interiors that draw people in, elevate brand presence, and encourage meaningful interaction."
   }
 ];
 

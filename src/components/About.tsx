@@ -12,7 +12,7 @@ const About = () => {
       className="section-padding py-16 sm:py-20 md:py-32 bg-[#686767] mt-16 sm:mt-20"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Heading */}
         <div
           ref={ref1}
