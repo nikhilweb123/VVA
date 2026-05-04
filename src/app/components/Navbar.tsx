@@ -6,11 +6,11 @@ import { useRouter, usePathname } from "next/navigation";
 
 const navLinks = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/#about" },
-  { label: "Services", href: "/#services" },
-  { label: "Projects", href: "/#projects" },
+  { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
+  { label: "Projects", href: "/projects" },
   { label: "Team", href: "/team" },
-  { label: "Contact", href: "/#contact" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
@@ -27,26 +27,11 @@ export default function Navbar() {
 
   const handleNav = (href: string) => {
     setMenuOpen(false);
-    if (href === "/") {
-      if (pathname === "/") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      } else {
-        router.push("/");
-      }
+    if (href === "/" && pathname === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-
-    if (href.startsWith("/#")) {
-      const targetId = href.substring(1);
-      if (pathname === "/") {
-        const el = document.querySelector(targetId);
-        if (el) el.scrollIntoView({ behavior: "smooth" });
-      } else {
-        router.push(href);
-      }
-    } else {
-      router.push(href);
-    }
+    router.push(href);
   };
 
   return (
@@ -80,15 +65,18 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-10">
-          {navLinks.map((link) => (
-            <button
-              key={link.label}
-              onClick={() => handleNav(link.href)}
-              className="nav-link font-sans text-xs tracking-ultra text-black/60 hover:text-black transition-colors duration-300 uppercase"
-            >
-              {link.label}
-            </button>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+            return (
+              <button
+                key={link.label}
+                onClick={() => handleNav(link.href)}
+                className={`nav-link font-sans text-xs tracking-ultra transition-colors duration-300 uppercase ${isActive ? "text-black" : "text-black/60 hover:text-black"}`}
+              >
+                {link.label}
+              </button>
+            );
+          })}
         </nav>
 
         {/* Mobile Hamburger */}
