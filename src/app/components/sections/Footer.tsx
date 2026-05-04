@@ -4,9 +4,8 @@ import { motion } from "framer-motion";
 import { useInView } from "../../hooks/useInView";
 
 const social = [
-  { label: "Instagram", href: "#" },
-  { label: "LinkedIn", href: "#" },
-  { label: "Behance", href: "#" },
+  { label: "Instagram", href: "https://www.instagram.com/vvarts.studio/" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/company/vva-design-studio/" },
 ];
 
 const navCols = [
@@ -114,6 +113,8 @@ export default function Footer() {
               <li key={s.label}>
                 <a
                   href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="nav-link font-sans text-white/80 text-m hover:text-white transition-colors duration-300"
                 >
                   {s.label}
