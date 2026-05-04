@@ -133,15 +133,30 @@ export default function AdminProjects() {
   };
 
   const uploadFile = async (file: File): Promise<string | null> => {
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+    if (!cloudName || !uploadPreset) {
+      throw new Error("Cloudinary is not configured. Add NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET to your .env.local file.");
+    }
+
     const formData = new FormData();
     formData.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: formData });
+    formData.append("upload_preset", uploadPreset);
+    formData.append("folder", "vva-projects");
+
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+      { method: "POST", body: formData }
+    );
+
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || "Upload failed");
+      throw new Error(err.error?.message || "Cloudinary upload failed");
     }
+
     const data = await res.json();
-    return data.url as string;
+    return data.secure_url as string;
   };
 
   const handleMainImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -271,20 +286,26 @@ export default function AdminProjects() {
           </button>
         </div>
 
-        {/* Image URL tip banner */}
-        <div className="mb-8 border border-ivory/10 bg-ivory/5 px-6 py-4 flex items-start gap-4">
-          <span className="text-ivory/40 text-lg mt-0.5">💡</span>
-          <div>
-            <p className="font-sans text-ivory/80 text-xs tracking-wide mb-1">
-              <span className="text-ivory font-semibold">Images use URLs.</span> Upload your photos to{" "}
-              <span className="text-ivory underline">Cloudinary.com</span> (free) or{" "}
-              <span className="text-ivory underline">imgbb.com</span> (free), then paste the image link here.
+        {/* Cloudinary setup banner */}
+        {(!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || !process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET) && (
+          <div className="mb-8 border border-yellow-500/30 bg-yellow-500/5 px-6 py-4">
+            <p className="font-sans text-yellow-300 text-xs font-semibold tracking-wide mb-2">
+              ⚠ Cloudinary not configured — direct upload is disabled
             </p>
-            <p className="font-sans text-ivory/40 text-[10px] tracking-wide">
-              Cloudinary: cloudinary.com → Media Library → Upload → right-click image → Copy URL
+            <ol className="font-sans text-ivory/60 text-[11px] tracking-wide space-y-1 list-decimal pl-4">
+              <li>Create a free account at <span className="text-ivory">cloudinary.com</span></li>
+              <li>Go to Settings → Upload → Add upload preset → set Signing Mode to <span className="text-ivory">Unsigned</span> → Save</li>
+              <li>Add these two lines to your <span className="text-ivory">.env.local</span> file:</li>
+            </ol>
+            <pre className="mt-2 font-mono text-[11px] text-ivory/70 bg-white/5 px-4 py-3 rounded select-all">
+{`NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
+NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_preset_name`}
+            </pre>
+            <p className="font-sans text-ivory/40 text-[10px] tracking-wide mt-2">
+              Then restart the dev server. Your cloud name is on the Cloudinary dashboard homepage.
             </p>
           </div>
-        </div>
+        )}
 
         {/* Projects Table */}
         {loading ? (
