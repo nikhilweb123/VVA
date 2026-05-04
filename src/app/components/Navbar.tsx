@@ -5,11 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 
 const navLinks = [
-  { label: "Projects", href: "/projects" },
-  { label: "Services", href: "/services" },
-  { label: "About", href: "/about" },
+  { label: "Home", href: "/" },
+  { label: "About", href: "/#about" },
+  { label: "Services", href: "/#services" },
+  { label: "Projects", href: "/#projects" },
   { label: "Team", href: "/team" },
-  { label: "Contact", href: "/contact" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export default function Navbar() {
@@ -26,6 +27,15 @@ export default function Navbar() {
 
   const handleNav = (href: string) => {
     setMenuOpen(false);
+    if (href === "/") {
+      if (pathname === "/") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        router.push("/");
+      }
+      return;
+    }
+
     if (href.startsWith("/#")) {
       const targetId = href.substring(1);
       if (pathname === "/") {

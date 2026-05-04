@@ -12,19 +12,19 @@ const navCols = [
   {
     heading: "Studio",
     links: [
-      { label: "Projects", href: "/projects" },
-      { label: "About", href: "/about" },
+      { label: "Projects", href: "/#projects" },
+      { label: "About", href: "/#about" },
       { label: "Our Team", href: "/team" },
-      { label: "Contact", href: "/contact" },
+      { label: "Contact", href: "/#contact" },
     ],
   },
   {
     heading: "Services",
     links: [
-      { label: "Architecture", href: "/#services" },
-      { label: "Interiors", href: "/#services" },
-      { label: "Masterplanning", href: "/#services" },
-      { label: "Consultancy", href: "/#services" },
+      { label: "Master Planning", href: "/services" },
+      { label: "Architectural Design", href: "/services" },
+      { label: "Infrastructure Design Development", href: "/services" },
+      { label: "Landscape and Hardscape Design", href: "/services" },
     ],
   },
 ];

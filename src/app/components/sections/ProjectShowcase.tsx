@@ -94,7 +94,7 @@ function ProjectCard({ project, index }: ProjectCardProps) {
         className={`flex flex-col justify-center px-10 md:px-16 py-16 ${isEven ? "order-2" : "order-2 md:order-1"}`}
       >
         <p className="font-sans text-black/40 text-[14px] tracking-ultra uppercase mb-6">
-          {project.id} — {project.category} — {project.year}
+          {project.category} — {project.year}
         </p>
         <h2 className="font-serif text-black text-4xl md:text-6xl font-light leading-tight mb-4">
           {project.title}
