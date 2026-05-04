@@ -42,8 +42,12 @@ export default function AdminProjects() {
   const [galleryInput, setGalleryInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [srcError, setSrcError] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
   const srcDebounce = useRef<NodeJS.Timeout | null>(null);
+  const mainImageInputRef = useRef<HTMLInputElement>(null);
+  const galleryImageInputRef = useRef<HTMLInputElement>(null);
 
   const showToast = (msg: string, type: "success" | "error" = "success") => {
     setToast({ msg, type });
@@ -125,6 +129,53 @@ export default function AdminProjects() {
           img.src = value;
         }
       }, 600);
+    }
+  };
+
+  const uploadFile = async (file: File): Promise<string | null> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch("/api/upload", { method: "POST", body: formData });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Upload failed");
+    }
+    const data = await res.json();
+    return data.url as string;
+  };
+
+  const handleMainImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setSrcError(false);
+    try {
+      const url = await uploadFile(file);
+      if (url) setForm(prev => ({ ...prev, src: url }));
+    } catch (err: any) {
+      showToast(err.message || "Image upload failed", "error");
+    } finally {
+      setUploading(false);
+      if (mainImageInputRef.current) mainImageInputRef.current.value = "";
+    }
+  };
+
+  const handleGalleryUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    setGalleryUploading(true);
+    try {
+      const urls = await Promise.all(files.map(uploadFile));
+      const validUrls = urls.filter(Boolean) as string[];
+      setGalleryInput(prev => {
+        const existing = prev.trim();
+        return existing ? `${existing}, ${validUrls.join(", ")}` : validUrls.join(", ");
+      });
+    } catch (err: any) {
+      showToast(err.message || "Gallery upload failed", "error");
+    } finally {
+      setGalleryUploading(false);
+      if (galleryImageInputRef.current) galleryImageInputRef.current.value = "";
     }
   };
 
@@ -410,7 +461,29 @@ export default function AdminProjects() {
                 {/* Main Image */}
                 <div>
                   <p className="font-sans text-[10px] tracking-ultra uppercase text-ivory/30 mb-4">Main Image</p>
-                  <Field label="Image URL *">
+
+                  {/* Upload from device */}
+                  <input
+                    ref={mainImageInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="hidden"
+                    onChange={handleMainImageUpload}
+                  />
+                  <button
+                    type="button"
+                    disabled={uploading}
+                    onClick={() => mainImageInputRef.current?.click()}
+                    className="mb-4 font-sans text-[10px] tracking-ultra uppercase border border-ivory/40 px-5 py-2.5 hover:border-ivory text-ivory/60 hover:text-ivory transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {uploading ? (
+                      <><span className="animate-spin inline-block w-3 h-3 border border-ivory/40 border-t-ivory rounded-full" /> Uploading...</>
+                    ) : (
+                      "Upload from Device"
+                    )}
+                  </button>
+
+                  <Field label="Or paste Image URL *">
                     <input
                       type="url" name="src" required
                       value={form.src} onChange={handleChange}
@@ -435,7 +508,7 @@ export default function AdminProjects() {
                     </div>
                   )}
                   <p className="font-sans text-[10px] text-ivory/30 tracking-wide mt-3">
-                    Free image hosts: <span className="text-ivory/50">cloudinary.com</span> · <span className="text-ivory/50">imgbb.com</span> · <span className="text-ivory/50">unsplash.com (copy image address)</span>
+                    Max 5 MB · JPEG, PNG, WebP, GIF
                   </p>
                 </div>
 
@@ -478,7 +551,30 @@ export default function AdminProjects() {
                 {/* Gallery */}
                 <div>
                   <p className="font-sans text-[10px] tracking-ultra uppercase text-ivory/30 mb-4">Gallery</p>
-                  <Field label="Gallery Image URLs (comma separated)">
+
+                  {/* Gallery upload from device */}
+                  <input
+                    ref={galleryImageInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    multiple
+                    className="hidden"
+                    onChange={handleGalleryUpload}
+                  />
+                  <button
+                    type="button"
+                    disabled={galleryUploading}
+                    onClick={() => galleryImageInputRef.current?.click()}
+                    className="mb-4 font-sans text-[10px] tracking-ultra uppercase border border-ivory/40 px-5 py-2.5 hover:border-ivory text-ivory/60 hover:text-ivory transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {galleryUploading ? (
+                      <><span className="animate-spin inline-block w-3 h-3 border border-ivory/40 border-t-ivory rounded-full" /> Uploading...</>
+                    ) : (
+                      "Upload Gallery Images"
+                    )}
+                  </button>
+
+                  <Field label="Or paste Gallery Image URLs (comma separated)">
                     <textarea
                       rows={3}
                       value={galleryInput}
@@ -488,7 +584,7 @@ export default function AdminProjects() {
                     />
                   </Field>
                   <p className="font-sans text-[10px] text-ivory/30 tracking-wide mt-2">
-                    Paste multiple image URLs separated by commas
+                    Select multiple files at once · Max 5 MB each
                   </p>
                 </div>
 
