@@ -74,7 +74,12 @@ export default function Footer() {
         >
           <p className="font-serif text-white text-2xl tracking-ultra font-light mb-4">VVA</p>
           <p className="font-sans text-white/60 text-xs leading-relaxed max-w-xs">
-            Architecture &amp; Interiors<br />New Delhi, India
+            Design Studio<br />
+            B-120 Ground Floor Level, Sector 43,<br />
+            Faridabad, Haryana — 121010. IN.<br />
+            <br />
+            M: <a href="tel:+917042024600" className="hover:text-white transition-colors duration-300">+91 7042024600</a><br />
+            <a href="mailto:connect@vvadesignstudio.in" className="hover:text-white transition-colors duration-300">connect@vvadesignstudio.in</a>
           </p>
         </motion.div>
 
@@ -128,10 +133,10 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="px-8 md:px-16 py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
         <p className="font-sans text-white/40 text-[14px] tracking-wider">
-          © {new Date().getFullYear()} VVA  Design Studio. All rights reserved.
+          © {new Date().getFullYear()} VVA Design Studio. All rights reserved.
         </p>
         <p className="font-sans text-white/40 text-[14px] tracking-wider">
-          Architecture &amp; Interiors — New Delhi
+          Architecture &amp; Interiors — Faridabad, Haryana
         </p>
       </div>
     </footer>
