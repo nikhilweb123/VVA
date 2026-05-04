@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -8,6 +8,7 @@ const navLinks = [
   { label: "Projects", href: "/projects" },
   { label: "Services", href: "/services" },
   { label: "About", href: "/about" },
+  { label: "Team", href: "/team" },
   { label: "Contact", href: "/contact" },
 ];
 
