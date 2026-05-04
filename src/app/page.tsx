@@ -29,7 +29,7 @@ export default function Home() {
       <main>
         <HeroSection />
         <MarqueeBanner />
-        <AboutPreview />
+        <AboutPreview isPreview={true} />
         <Services isPage={false} />
         <About />
         <ProjectShowcase />

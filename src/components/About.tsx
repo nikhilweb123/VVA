@@ -34,31 +34,29 @@ const About = () => {
           style={{ transitionDelay: "0.2s" }}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
-            
+
             <p className="font-sans text-white text-sm sm:text-base md:text-lg leading-relaxed">
-              Founded in 2024, our studio focuses on delivering modern architectural
-              solutions that are both practical and visually compelling. We work
-              across residential, commercial, and mixed-use projects, ensuring every
-              design reflects innovation and purpose.
+              Headed by Mr. Vaibhav Vashisht, Architect, Registered under Council of
+              Architecture (CoA), with Design &amp; Execution experience of 18+ years,
+              supported by a strong team of 6 Architects &amp; Interior Designers.
             </p>
 
             <p className="font-sans text-white text-sm sm:text-base md:text-lg leading-relaxed">
-              Our approach combines thoughtful planning with attention to detail,
-              creating spaces that enhance everyday experiences. From concept to
-              completion, we aim to provide designs that are sustainable,
-              functional, and built for long-term value.
+              Based in Faridabad NCR, executing projects PAN India across Residential —
+              High-Rise &amp; Low-Rise buildings, Industrial, Warehousing, Retail,
+              Multiplexes &amp; Hotels.
             </p>
           </div>
 
           {/* Stats */}
           <div className="mt-12 md:mt-20 pt-8 md:pt-12 border-t border-gray-300">
             <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 text-center md:text-left">
-              
+
               {[
-                { number: "20+", label: "Projects Completed" },
-                { number: "2024", label: "Year Established" },
-                { number: "8+", label: "Cities Served" },
-                { number: "Multiple", label: "Industry Sectors" },
+                { number: "18+", label: "Years of Experience" },
+                { number: "6+", label: "Architects & Designers" },
+                { number: "PAN India", label: "Project Reach" },
+                { number: "6", label: "In-House Services" },
               ].map((stat) => (
                 <div key={stat.label}>
                   <span className="font-sans text-2xl sm:text-3xl md:text-4xl text-white font-semibold">
