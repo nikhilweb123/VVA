@@ -56,10 +56,11 @@ export async function setSessionCookie(): Promise<void> {
   });
 }
 
-/** Clear the session cookie (call from logout route). */
+/** Clear the session cookie. */
 export async function clearSessionCookie(): Promise<void> {
   const store = await cookies();
-  store.delete(COOKIE_NAME);
+  store.delete('__Secure-admin_session');
+  store.delete('admin_session'); // Clear legacy cookie too
 }
 
 /** Returns true if the current request carries a valid signed session. */
