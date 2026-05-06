@@ -59,8 +59,18 @@ export async function setSessionCookie(): Promise<void> {
 /** Clear the session cookie. */
 export async function clearSessionCookie(): Promise<void> {
   const store = await cookies();
-  store.delete('__Secure-admin_session');
-  store.delete('admin_session'); // Clear legacy cookie too
+
+  // To reliably clear a cookie, we must match the path and secure flags used when setting it.
+  const clearOptions = {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict' as const,
+    maxAge: 0,
+    path: '/',
+  };
+
+  store.set('__Secure-admin_session', '', clearOptions);
+  store.set('admin_session', '', clearOptions); // Clear legacy cookie too
 }
 
 /** Returns true if the current request carries a valid signed session. */
