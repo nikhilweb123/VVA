@@ -21,8 +21,11 @@ export async function POST(request: Request) {
 
     await setSessionCookie();
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login error:', error);
-    return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
+    return NextResponse.json({ 
+      success: false, 
+      message: `Server error: ${error.message || 'Unknown error'}` 
+    }, { status: 500 });
   }
 }
