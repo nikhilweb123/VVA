@@ -1,15 +1,10 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import dbConnect from '@/lib/db';
+import { isAuthenticated } from '@/lib/auth';
 import Enquiry from '@/models/Enquiry';
 import ContactSettings from '@/models/ContactSettings';
 
 export const dynamic = 'force-dynamic';
-
-async function isAuthenticated() {
-  const cookieStore = await cookies();
-  return cookieStore.get('admin_session')?.value === 'true';
-}
 
 export async function GET() {
   if (!(await isAuthenticated())) {

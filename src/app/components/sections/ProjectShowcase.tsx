@@ -134,16 +134,20 @@ export default function ProjectShowcase({ allProjects = false }: { allProjects?:
         const projData = await projRes.json();
         const catData = await catRes.json();
 
-        setAllData(projData);
-        setCategories([{ id: "all", name: "All" }, ...catData]);
+        const safeProjData = Array.isArray(projData) ? projData : [];
+        const safeCatData = Array.isArray(catData) ? catData : [];
 
-        let initial = projData;
+        setAllData(safeProjData);
+        setCategories([{ id: "all", name: "All" }, ...safeCatData]);
+
+        let initial = safeProjData;
         if (!allProjects) {
-          initial = projData.filter((p: Project) => p.featured === true);
+          initial = safeProjData.filter((p: Project) => p.featured === true);
         }
         setProjects(initial);
       } catch (err) {
         console.error('Failed to fetch data', err);
+        setProjects([]);
       } finally {
         setLoading(false);
       }

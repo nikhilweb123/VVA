@@ -40,7 +40,4 @@ CREDENTIALS.md
 *.swo
 
 # Typos and temporary folders
-{app/
-node_modules/
-.next/
-.env
+# (Removed malformed entries)

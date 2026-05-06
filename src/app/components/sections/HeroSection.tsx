@@ -46,7 +46,7 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ slides = DEFAULT_SLIDES }: HeroSectionProps) {
-  const activeSlides = slides.length > 0 ? slides : DEFAULT_SLIDES;
+  const activeSlides = (Array.isArray(slides) && slides.length > 0) ? slides : DEFAULT_SLIDES;
   const [current, setCurrent] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();

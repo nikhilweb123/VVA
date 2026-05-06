@@ -34,7 +34,7 @@ export default function Services({
 }: ServicesProps) {
   const { ref: headerRef, inView: headerInView } = useInView();
 
-  const list = services && services.length > 0 ? services : DEFAULT_SERVICES;
+  const list = (Array.isArray(services) && services.length > 0) ? services : DEFAULT_SERVICES;
 
   return (
     <section id="services" className={`bg-obsidian ${isPage ? "pt-40" : "pt-24"} pb-32 min-h-screen`}>

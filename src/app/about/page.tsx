@@ -16,7 +16,7 @@ async function getAboutContent() {
     await dbConnect();
     let about = await AboutContent.findOne({}).lean();
     if (!about) {
-      about = await AboutContent.create({}).lean();
+      about = (await AboutContent.create({})).toJSON();
     }
     return about;
   } catch {

@@ -1,13 +1,12 @@
-import { cookies } from 'next/headers';
+import { isAuthenticated } from '@/lib/auth';
 import AdminLogin from '../../components/AdminLogin';
 import LogoutButton from '../../components/LogoutButton';
 import AdminNavbar from '../../components/AdminNavbar';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies();
-  const session = cookieStore.get('admin_session');
+  const authed = await isAuthenticated();
 
-  if (!session?.value) {
+  if (!authed) {
     return <AdminLogin />;
   }
 

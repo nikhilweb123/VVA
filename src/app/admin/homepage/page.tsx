@@ -100,16 +100,23 @@ export default function AdminHomepage() {
     fetch("/api/homepage")
       .then(r => r.json())
       .then(d => {
-        setData({
-          hero: d.hero ?? [],
-          about: d.about ?? { title: "", description1: "", description2: "", image: "" },
-          servicesHeading: d.servicesHeading ?? "",
-          servicesSubheading: d.servicesSubheading ?? "",
-          services: d.services ?? [],
-          stats: d.stats ?? [],
-          testimonials: d.testimonials ?? [],
-          footer: d.footer ?? { ctaHeading: "", ctaSubtext: "", email: "", phone: "", address: "", brandName: "", tagline: "", socialLinks: [], copyright: "" },
-        });
+        if (d && !d.error) {
+          setData({
+            hero: Array.isArray(d.hero) ? d.hero : [],
+            about: d.about ?? { title: "", description1: "", description2: "", image: "" },
+            servicesHeading: d.servicesHeading ?? "",
+            servicesSubheading: d.servicesSubheading ?? "",
+            services: Array.isArray(d.services) ? d.services : [],
+            stats: Array.isArray(d.stats) ? d.stats : [],
+            testimonials: Array.isArray(d.testimonials) ? d.testimonials : [],
+            footer: d.footer ? {
+              ...d.footer,
+              socialLinks: Array.isArray(d.footer.socialLinks) ? d.footer.socialLinks : []
+            } : { ctaHeading: "", ctaSubtext: "", email: "", phone: "", address: "", brandName: "", tagline: "", socialLinks: [], copyright: "" },
+          });
+        } else {
+          setData(null);
+        }
       })
       .catch(() => showToast("Failed to load content", "error"))
       .finally(() => setLoading(false));

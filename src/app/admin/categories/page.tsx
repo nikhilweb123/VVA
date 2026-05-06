@@ -17,7 +17,7 @@ export default function AdminCategories() {
     setLoading(true);
     const res = await fetch("/api/categories");
     const data = await res.json();
-    setCategories(data);
+    setCategories(Array.isArray(data) ? data : []);
     setLoading(false);
   };
 
@@ -73,7 +73,7 @@ export default function AdminCategories() {
           <p className="font-sans text-ash text-xs tracking-ultra uppercase animate-pulse">Loading...</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {categories.map((cat) => (
+            {Array.isArray(categories) && categories.map((cat) => (
               <motion.div
                 key={cat.id}
                 initial={{ opacity: 0, y: 10 }}
@@ -89,7 +89,7 @@ export default function AdminCategories() {
                 </button>
               </motion.div>
             ))}
-            {categories.length === 0 && (
+            {(!Array.isArray(categories) || categories.length === 0) && (
               <p className="col-span-full text-center text-ash text-xs tracking-ultra uppercase py-8">No categories found.</p>
             )}
           </div>

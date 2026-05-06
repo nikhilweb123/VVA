@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import dbConnect from '@/lib/db';
+import { isAuthenticated } from '@/lib/auth';
 import HomepageContent from '@/models/HomepageContent';
 
 export const dynamic = 'force-dynamic';
@@ -82,11 +82,6 @@ const DEFAULT_CONTENT = {
     copyright: 'Architecture & Interiors — Faridabad, Haryana',
   },
 };
-
-async function isAuthenticated() {
-  const cookieStore = await cookies();
-  return cookieStore.get('admin_session')?.value === 'true';
-}
 
 export async function GET() {
   try {

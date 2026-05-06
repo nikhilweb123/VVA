@@ -165,7 +165,15 @@ export default function AdminAbout() {
     try {
       const res = await fetch("/api/about");
       const data = await res.json();
-      setAbout(data || EMPTY_FORM);
+      if (data && !data.error) {
+        setAbout({
+          ...EMPTY_FORM,
+          ...data,
+          timeline: Array.isArray(data.timeline) ? data.timeline : []
+        });
+      } else {
+        setAbout(EMPTY_FORM);
+      }
     } catch {
       showToast("Failed to load about content", "error");
     } finally {
@@ -333,7 +341,7 @@ export default function AdminAbout() {
               </button>
             </div>
             <div className="space-y-4">
-              {about.timeline.map((event, i) => (
+              {Array.isArray(about?.timeline) && about.timeline.map((event, i) => (
                 <div key={i} className="grid grid-cols-12 gap-3 items-end p-4 border border-ivory/10 rounded">
                   <div className="col-span-3">
                     <label className="flex flex-col gap-1.5">

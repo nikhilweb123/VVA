@@ -1,14 +1,9 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import dbConnect from '@/lib/db';
+import { isAuthenticated } from '@/lib/auth';
 import Category from '@/models/Category';
 
 export const dynamic = 'force-dynamic';
-
-async function isAuthenticated() {
-  const cookieStore = await cookies();
-  return cookieStore.get('admin_session')?.value === 'true';
-}
 
 export async function DELETE(
   _request: Request,

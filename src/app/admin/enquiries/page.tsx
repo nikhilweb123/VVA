@@ -21,7 +21,7 @@ export default function EnquiriesPage() {
       try {
         const res = await fetch("/api/enquiries");
         const data = await res.json();
-        setEnquiries(data);
+        setEnquiries(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Failed to fetch enquiries:", error);
       } finally {
@@ -47,13 +47,13 @@ export default function EnquiriesPage() {
         <p className="text-ivory/60 font-sans text-sm">Messages received from the contact form</p>
       </header>
 
-      {enquiries.length === 0 ? (
+      {!Array.isArray(enquiries) || enquiries.length === 0 ? (
         <div className="p-12 border border-ivory/10 bg-ivory/5 text-center">
           <p className="text-ivory/60 font-sans">No enquiries found yet.</p>
         </div>
       ) : (
         <div className="grid gap-6">
-          {enquiries.map((enquiry) => (
+          {enquiries?.map((enquiry) => (
             <motion.div
               key={enquiry.id}
               initial={{ opacity: 0, y: 20 }}
