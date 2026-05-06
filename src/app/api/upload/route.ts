@@ -1,66 +1,73 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import fs from 'fs/promises';
-import path from 'path';
+import { isAuthenticated } from '@/lib/auth';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-async function isAuthenticated() {
-  const cookieStore = await cookies();
-  return cookieStore.get('admin_session')?.value === 'true';
-}
+const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 
 export async function POST(request: Request) {
-  if (!await isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   let formData: FormData;
   try {
     formData = await request.formData();
-  } catch (e: any) {
-    console.error('formData parse error:', e);
-    return NextResponse.json({ error: `Failed to parse form data: ${e?.message}` }, { status: 400 });
+  } catch {
+    return NextResponse.json({ error: 'Failed to parse form data' }, { status: 400 });
   }
 
   const file = formData.get('file') as File | null;
-
   if (!file || typeof file === 'string') {
     return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
   }
 
-  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-  if (!allowedTypes.includes(file.type)) {
+  if (!ALLOWED_TYPES.has(file.type)) {
     return NextResponse.json(
       { error: 'Invalid file type. Only JPEG, PNG, WebP, and GIF are allowed.' },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
-  const maxSize = 5 * 1024 * 1024;
-  if (file.size > maxSize) {
-    return NextResponse.json({ error: 'File too large. Maximum size is 5MB.' }, { status: 400 });
+  if (file.size > MAX_SIZE) {
+    return NextResponse.json({ error: 'File too large. Maximum size is 5 MB.' }, { status: 400 });
+  }
+
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME ?? process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET ?? process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+
+  if (!cloudName || !uploadPreset) {
+    console.error('Cloudinary env vars (CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET) are not set.');
+    return NextResponse.json({ error: 'Image storage is not configured' }, { status: 500 });
   }
 
   try {
-    const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'projects');
-    await fs.mkdir(uploadsDir, { recursive: true });
-
-    const timestamp = Date.now();
-    const ext = path.extname(file.name || '.jpg').toLowerCase() || '.jpg';
-    const filename = `project-${timestamp}-${Math.random().toString(36).substring(2, 8)}${ext}`;
-    const filePath = path.join(uploadsDir, filename);
-
     const bytes = await file.arrayBuffer();
-    await fs.writeFile(filePath, Buffer.from(bytes));
+    const base64 = Buffer.from(bytes).toString('base64');
+    const dataUri = `data:${file.type};base64,${base64}`;
 
-    return NextResponse.json(
-      { success: true, url: `/uploads/projects/${filename}`, filename },
-      { status: 201 }
-    );
-  } catch (e: any) {
-    console.error('Upload write error:', e);
-    return NextResponse.json({ error: `Upload failed: ${e?.message}` }, { status: 500 });
+    const body = new FormData();
+    body.append('file', dataUri);
+    body.append('upload_preset', uploadPreset);
+    body.append('folder', 'vva-portfolio');
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: 'POST',
+      body,
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error('Cloudinary upload failed:', err);
+      return NextResponse.json({ error: 'Image upload failed' }, { status: 502 });
+    }
+
+    const json = (await res.json()) as { secure_url: string; public_id: string };
+    return NextResponse.json({ success: true, url: json.secure_url }, { status: 201 });
+  } catch (err) {
+    console.error('Upload error:', err);
+    return NextResponse.json({ error: 'Image upload failed' }, { status: 500 });
   }
 }

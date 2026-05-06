@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, usePathname } from "next/navigation";
+import { useSiteSettings } from "@/components/SiteSettingsProvider";
 
-const navLinks = [
+const DEFAULT_NAV_ITEMS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Services", href: "/services" },
@@ -18,6 +19,12 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const siteSettings = useSiteSettings();
+
+  const navbar = siteSettings?.navbar;
+  const logoUrl = navbar?.logoUrl || "/logo_transparent.png";
+  const logoAlt = navbar?.logoAlt || "VVA Design Studio";
+  const navLinks = navbar?.navItems?.length ? navbar.navItems : DEFAULT_NAV_ITEMS;
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 60);
@@ -40,8 +47,9 @@ export default function Navbar() {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 2.2 }}
-        className={`fixed top-0 left-0 right-0 z-50 px-8 md:px-16 py-6 flex items-center justify-between transition-all duration-700 ${scrolled ? "bg-white/95 backdrop-blur-md border-b border-black/10" : "bg-transparent"
-          }`}
+        className={`fixed top-0 left-0 right-0 z-50 px-8 md:px-16 py-6 flex items-center justify-between transition-all duration-700 ${
+          scrolled ? "bg-white/95 backdrop-blur-md border-b border-black/10" : "bg-transparent"
+        }`}
       >
         {/* Logo */}
         <a
@@ -56,22 +64,21 @@ export default function Navbar() {
             }
           }}
         >
-          <img
-            src="/logo_transparent.png"
-            alt="VVA Design Studio"
-            className="h-[1.80rem] w-auto" /* Invert logo if it was white, or just ensure it looks good */
-          />
+          <img src={logoUrl} alt={logoAlt} className="h-[1.80rem] w-auto" />
         </a>
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-10">
           {navLinks.map((link) => {
-            const isActive = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
+            const isActive =
+              link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
             return (
               <button
                 key={link.label}
                 onClick={() => handleNav(link.href)}
-                className={`nav-link font-sans text-xs tracking-ultra transition-colors duration-300 uppercase ${isActive ? "text-black" : "text-black/60 hover:text-black"}`}
+                className={`nav-link font-sans text-xs tracking-ultra transition-colors duration-300 uppercase ${
+                  isActive ? "text-black" : "text-black/60 hover:text-black"
+                }`}
               >
                 {link.label}
               </button>
@@ -85,11 +92,22 @@ export default function Navbar() {
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle menu"
         >
-          <span className={`block w-6 h-px bg-black transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-[9px]" : ""}`} />
-          <span className={`block w-6 h-px bg-black transition-all duration-300 ${menuOpen ? "opacity-0" : ""}`} />
-          <span className={`block w-6 h-px bg-black transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-[9px]" : ""}`} />
+          <span
+            className={`block w-6 h-px bg-black transition-all duration-300 ${
+              menuOpen ? "rotate-45 translate-y-[9px]" : ""
+            }`}
+          />
+          <span
+            className={`block w-6 h-px bg-black transition-all duration-300 ${
+              menuOpen ? "opacity-0" : ""
+            }`}
+          />
+          <span
+            className={`block w-6 h-px bg-black transition-all duration-300 ${
+              menuOpen ? "-rotate-45 -translate-y-[9px]" : ""
+            }`}
+          />
         </button>
-
       </motion.header>
 
       {/* Mobile Menu Overlay */}
@@ -103,7 +121,10 @@ export default function Navbar() {
             className="fixed inset-0 z-[60] bg-ivory flex flex-col items-center justify-center gap-12"
             onClick={() => setMenuOpen(false)}
           >
-            <div className="flex flex-col items-center gap-12" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="flex flex-col items-center gap-12"
+              onClick={(e) => e.stopPropagation()}
+            >
               {navLinks.map((link, i) => (
                 <motion.button
                   key={link.label}
@@ -118,7 +139,6 @@ export default function Navbar() {
               ))}
             </div>
           </motion.div>
-
         )}
       </AnimatePresence>
     </>

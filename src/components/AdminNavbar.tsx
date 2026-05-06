@@ -20,11 +20,23 @@ export default function AdminNavbar() {
           <Link href="/admin/projects" className={`pb-1 transition-colors ${isActive("/admin/projects")}`}>
             Projects
           </Link>
+          <Link href="/admin/categories" className={`pb-1 transition-colors ${isActive("/admin/categories")}`}>
+            Categories
+          </Link>
+          <Link href="/admin/homepage" className={`pb-1 transition-colors ${isActive("/admin/homepage")}`}>
+            Homepage
+          </Link>
+          <Link href="/admin/about" className={`pb-1 transition-colors ${isActive("/admin/about")}`}>
+            About
+          </Link>
+          <Link href="/admin/contact" className={`pb-1 transition-colors ${isActive("/admin/contact")}`}>
+            Contact
+          </Link>
           <Link href="/admin/enquiries" className={`pb-1 transition-colors ${isActive("/admin/enquiries")}`}>
             Enquiries
           </Link>
-          <Link href="/admin/categories" className={`pb-1 transition-colors ${isActive("/admin/categories")}`}>
-            Categories
+          <Link href="/admin/site-settings" className={`pb-1 transition-colors ${isActive("/admin/site-settings")}`}>
+            Site Settings
           </Link>
         </div>
       </div>

@@ -3,51 +3,38 @@
 import { motion } from "framer-motion";
 import { useInView } from "../../hooks/useInView";
 
-const servicesList = [
-  {
-    id: "01",
-    title: "Master Planning",
-    description: "Comprehensive master planning strategies that integrate community needs, ecological balance, and long-term urban viability."
-  },
-  {
-    id: "02",
-    title: "Architectural Design",
-    description: "Creating visionary, functional, and sustainable structures that redefine spatial experiences and respond harmoniously to their contexts."
-  },
-  {
-    id: "03",
-    title: "Infrastructure Design Development",
-    description: "End-to-end infrastructure design and development ensuring seamless integration of technical systems with architectural vision."
-  },
-  {
-    id: "04",
-    title: "Landscape and Hardscape Design",
-    description: "Designing outdoor environments that harmoniously blend soft landscaping with hardscape elements to create cohesive, liveable spaces."
-  },
-  {
-    id: "05",
-    title: "Urban Spaces and Master Planning",
-    description: "Forward-looking urban design strategies that activate public spaces and shape thriving, connected communities."
-  },
-  {
-    id: "06",
-    title: "Workspace Interior",
-    description: "Crafting productive and inspiring workplace environments that balance aesthetic elegance with intuitive flow and functional efficiency."
-  },
-  {
-    id: "07",
-    title: "Hospitality Interior",
-    description: "Designing immersive hospitality spaces that create memorable guest experiences through thoughtful detailing and refined aesthetics."
-  },
-  {
-    id: "08",
-    title: "Retail & Public Space Interior",
-    description: "Creating engaging retail and public interiors that draw people in, elevate brand presence, and encourage meaningful interaction."
-  }
-];
+export interface ServiceItem {
+  title: string;
+  description: string;
+}
 
-export default function Services({ isPage = true }: { isPage?: boolean }) {
+const DEFAULT_SERVICES: ServiceItem[] = [
+  { id: "01", title: "Master Planning", description: "Comprehensive master planning strategies that integrate community needs, ecological balance, and long-term urban viability." },
+  { id: "02", title: "Architectural Design", description: "Creating visionary, functional, and sustainable structures that redefine spatial experiences and respond harmoniously to their contexts." },
+  { id: "03", title: "Infrastructure Design Development", description: "End-to-end infrastructure design and development ensuring seamless integration of technical systems with architectural vision." },
+  { id: "04", title: "Landscape and Hardscape Design", description: "Designing outdoor environments that harmoniously blend soft landscaping with hardscape elements to create cohesive, liveable spaces." },
+  { id: "05", title: "Urban Spaces and Master Planning", description: "Forward-looking urban design strategies that activate public spaces and shape thriving, connected communities." },
+  { id: "06", title: "Workspace Interior", description: "Crafting productive and inspiring workplace environments that balance aesthetic elegance with intuitive flow and functional efficiency." },
+  { id: "07", title: "Hospitality Interior", description: "Designing immersive hospitality spaces that create memorable guest experiences through thoughtful detailing and refined aesthetics." },
+  { id: "08", title: "Retail & Public Space Interior", description: "Creating engaging retail and public interiors that draw people in, elevate brand presence, and encourage meaningful interaction." },
+] as any;
+
+interface ServicesProps {
+  isPage?: boolean;
+  services?: ServiceItem[];
+  heading?: string;
+  subheading?: string;
+}
+
+export default function Services({
+  isPage = true,
+  services,
+  heading = "Elevating spaces through thoughtful design.",
+  subheading = "Our Expertise",
+}: ServicesProps) {
   const { ref: headerRef, inView: headerInView } = useInView();
+
+  const list = services && services.length > 0 ? services : DEFAULT_SERVICES;
 
   return (
     <section id="services" className={`bg-obsidian ${isPage ? "pt-40" : "pt-24"} pb-32 min-h-screen`}>
@@ -60,7 +47,7 @@ export default function Services({ isPage = true }: { isPage?: boolean }) {
           transition={{ duration: 0.8 }}
           className="font-sans text-ash text-[16px] tracking-ultra uppercase mb-6"
         >
-          Our Expertise
+          {subheading}
         </motion.p>
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
@@ -68,7 +55,7 @@ export default function Services({ isPage = true }: { isPage?: boolean }) {
           transition={{ duration: 1, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           className="font-serif text-ivory text-5xl md:text-7xl lg:text-8xl font-light leading-tight"
         >
-          Elevating spaces through thoughtful design.
+          {heading}
         </motion.h1>
       </div>
 
@@ -76,15 +63,20 @@ export default function Services({ isPage = true }: { isPage?: boolean }) {
 
       {/* Services List */}
       <div className="border-b hr-thin">
-        {servicesList.map((service, index) => (
-          <ServiceRow key={service.id} service={service} index={index} />
+        {list.map((service, index) => (
+          <ServiceRow
+            key={index}
+            id={String(index + 1).padStart(2, "0")}
+            service={service}
+            index={index}
+          />
         ))}
       </div>
     </section>
   );
 }
 
-function ServiceRow({ service, index }: { service: any; index: number }) {
+function ServiceRow({ id, service }: { id: string; service: ServiceItem; index: number }) {
   const { ref, inView } = useInView({ threshold: 0.2 });
 
   return (
@@ -100,9 +92,7 @@ function ServiceRow({ service, index }: { service: any; index: number }) {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="col-span-2"
         >
-          <span className="font-sans text-ash text-sm tracking-ultra uppercase">
-            {service.id}
-          </span>
+          <span className="font-sans text-ash text-sm tracking-ultra uppercase">{id}</span>
         </motion.div>
 
         {/* Title */}

@@ -3,8 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
-const slides = [
+export interface HeroSlide {
+  src: string;
+  title: string;
+  subtitle: string;
+  location: string;
+  ctaText?: string;
+  ctaLink?: string;
+}
+
+const DEFAULT_SLIDES: HeroSlide[] = [
   {
     src: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1920&q=85",
     title: "A Sleek Vision of\nModern Commerce",
@@ -31,8 +41,12 @@ const slides = [
   },
 ];
 
+interface HeroSectionProps {
+  slides?: HeroSlide[];
+}
 
-export default function HeroSection() {
+export default function HeroSection({ slides = DEFAULT_SLIDES }: HeroSectionProps) {
+  const activeSlides = slides.length > 0 ? slides : DEFAULT_SLIDES;
   const [current, setCurrent] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval>>();
@@ -44,18 +58,20 @@ export default function HeroSection() {
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
+      setCurrent((prev) => (prev + 1) % activeSlides.length);
     }, 5500);
     return () => clearInterval(intervalRef.current);
-  }, []);
+  }, [activeSlides.length]);
 
   const goTo = (idx: number) => {
     setCurrent(idx);
     clearInterval(intervalRef.current);
     intervalRef.current = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
+      setCurrent((prev) => (prev + 1) % activeSlides.length);
     }, 5500);
   };
+
+  const slide = activeSlides[current] ?? activeSlides[0];
 
   return (
     <section className="relative w-full h-screen overflow-hidden bg-obsidian">
@@ -70,8 +86,8 @@ export default function HeroSection() {
           className="absolute inset-0"
         >
           <Image
-            src={slides[current].src}
-            alt={slides[current].subtitle}
+            src={slide.src}
+            alt={slide.subtitle}
             fill
             priority
             sizes="100vw"
@@ -92,26 +108,34 @@ export default function HeroSection() {
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: loaded ? 0 : 0.3 }}
           >
             <p className="font-sans text-black/60 text-xs tracking-ultra uppercase mb-6">
-              {String(current + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")} &nbsp;—&nbsp; {slides[current].location}
+              {String(current + 1).padStart(2, "0")} / {String(activeSlides.length).padStart(2, "0")} &nbsp;—&nbsp; {slide.location}
             </p>
             <h1 className="font-serif text-black text-4xl md:text-7xl lg:text-8xl font-light leading-[1.05] tracking-tight whitespace-pre-line mb-6 max-w-5xl">
-              {slides[current].title}
+              {slide.title}
             </h1>
-            <p className="font-sans text-black/80 text-sm tracking-wide">
-              {slides[current].subtitle}
+            <p className="font-sans text-black/80 text-sm tracking-wide mb-6">
+              {slide.subtitle}
             </p>
+            {slide.ctaText && slide.ctaLink && (
+              <Link
+                href={slide.ctaLink}
+                className="nav-link inline-flex items-center gap-3 font-sans text-black text-xs tracking-ultra uppercase group"
+              >
+                {slide.ctaText}
+                <span className="block w-8 h-px bg-black transition-all duration-500 group-hover:w-14" />
+              </Link>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
 
       {/* Dots */}
       <div className="absolute bottom-8 right-8 md:right-16 flex gap-3">
-        {slides.map((_, i) => (
+        {activeSlides.map((_, i) => (
           <button
             key={i}
             onClick={() => goTo(i)}
-            className={`w-6 h-px transition-all duration-500 ${i === current ? "bg-black w-12" : "bg-black/20"
-              }`}
+            className={`w-6 h-px transition-all duration-500 ${i === current ? "bg-black w-12" : "bg-black/20"}`}
           />
         ))}
       </div>
@@ -126,7 +150,6 @@ export default function HeroSection() {
         <span className="font-sans text-black/60 text-[10px] tracking-ultra uppercase">Scroll</span>
         <div className="scroll-bounce w-px h-8 bg-gradient-to-b from-black/80 to-transparent" />
       </motion.div>
-
     </section>
   );
 }

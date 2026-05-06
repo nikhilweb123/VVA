@@ -6,8 +6,27 @@ import Navbar from "../components/Navbar";
 import AboutPreview from "../components/sections/AboutPreview";
 import About from "../../components/About";
 import Footer from "../components/sections/Footer";
+import dbConnect from "@/lib/db";
+import AboutContent from "@/models/AboutContent";
 
-export default function AboutPage() {
+export const dynamic = "force-dynamic";
+
+async function getAboutContent() {
+  try {
+    await dbConnect();
+    let about = await AboutContent.findOne({}).lean();
+    if (!about) {
+      about = await AboutContent.create({}).lean();
+    }
+    return about;
+  } catch {
+    return null;
+  }
+}
+
+export default async function AboutPage() {
+  const aboutData = await getAboutContent();
+
   return (
     <SmoothScrollProvider>
       {/* Overlays */}
@@ -20,8 +39,8 @@ export default function AboutPage() {
 
       {/* Page content */}
       <main className="pt-24 bg-obsidian min-h-screen">
-        <AboutPreview />
-        <About />
+        <AboutPreview about={aboutData as any} />
+        <About about={aboutData as any} />
       </main>
 
       <Footer />

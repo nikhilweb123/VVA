@@ -4,51 +4,74 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useInView } from "../../hooks/useInView";
 
-const teamMembers = [
+export interface SocialLink {
+  platform: string;
+  url: string;
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  designation: string;
+  image: string;
+  description?: string;
+  socialLinks: SocialLink[];
+  order: number;
+}
+
+const FALLBACK_MEMBERS: TeamMember[] = [
   {
+    id: "1",
     name: "Vikram Varma",
-    role: "Principal Architect",
+    designation: "Principal Architect",
     image: "/team/member1.png",
-    description: "With over 20 years of experience, Vikram leads the studio's architectural vision, bringing a meticulous eye for detail and context."
+    description: "With over 20 years of experience, Vikram leads the studio's architectural vision, bringing a meticulous eye for detail and context.",
+    socialLinks: [],
+    order: 0,
   },
   {
+    id: "2",
     name: "Ananya Singh",
-    role: "Head of Interiors",
+    designation: "Head of Interiors",
     image: "/team/member2.png",
-    description: "Ananya transforms abstract concepts into tangible environments, focusing on materiality, light, and human experience."
+    description: "Ananya transforms abstract concepts into tangible environments, focusing on materiality, light, and human experience.",
+    socialLinks: [],
+    order: 1,
   },
   {
+    id: "3",
     name: "Rajesh Nair",
-    role: "Master Planning Lead",
+    designation: "Master Planning Lead",
     image: "/team/member3.png",
-    description: "Rajesh specializes in large-scale urban strategies, ensuring our developments remain sustainable and community-centric."
+    description: "Rajesh specializes in large-scale urban strategies, ensuring our developments remain sustainable and community-centric.",
+    socialLinks: [],
+    order: 2,
   },
-  {
-    name: "Priya Sharma",
-    role: "Senior Designer",
-    image: "/team/member2.png",
-    description: "Priya brings fresh perspectives and innovative parametric design techniques to the studio's most complex geometries."
-  },
-  {
-    name: "Amit Desai",
-    role: "Project Manager",
-    image: "/team/member1.png",
-    description: "Amit ensures every design is executed flawlessly on-site, balancing schedules, budgets, and uncompromised quality."
-  },
-  {
-    name: "Neha Gupta",
-    role: "Sustainability Consultant",
-    image: "/team/member2.png",
-    description: "Neha integrates passive cooling, ecological materials, and energy efficiency into every phase of our designs."
-  }
 ];
 
-export default function Team() {
+const PLATFORM_ICONS: Record<string, string> = {
+  linkedin: "in",
+  twitter: "𝕏",
+  instagram: "ig",
+  behance: "bē",
+  dribbble: "db",
+};
+
+function getPlatformIcon(platform: string) {
+  return PLATFORM_ICONS[platform.toLowerCase()] ?? platform.charAt(0).toUpperCase();
+}
+
+interface TeamProps {
+  members?: TeamMember[];
+}
+
+export default function Team({ members }: TeamProps) {
   const { ref: headerRef, inView: headerInView } = useInView();
+  const list = members && members.length > 0 ? members : FALLBACK_MEMBERS;
 
   return (
     <section className="bg-obsidian min-h-screen">
-      {/* Cinematic Header with Background */}
+      {/* Cinematic Header */}
       <div className="relative h-[60vh] md:h-[70vh] flex items-center px-8 md:px-16 overflow-hidden">
         <Image
           src="/team/header-bg.png"
@@ -83,11 +106,10 @@ export default function Team() {
       <div className="pt-24 pb-32">
         <hr className="hr-thin mx-8 md:mx-16 mb-16" />
 
-
         {/* Team Grid */}
         <div className="px-8 md:px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-          {teamMembers.map((member, index) => (
-            <TeamCard key={member.name} member={member} index={index} />
+          {list.map((member, index) => (
+            <TeamCard key={member.id ?? index} member={member} index={index} />
           ))}
         </div>
       </div>
@@ -95,7 +117,7 @@ export default function Team() {
   );
 }
 
-function TeamCard({ member, index }: { member: any; index: number }) {
+function TeamCard({ member, index }: { member: TeamMember; index: number }) {
   const { ref, inView } = useInView({ threshold: 0.2 });
 
   return (
@@ -106,26 +128,56 @@ function TeamCard({ member, index }: { member: any; index: number }) {
       transition={{ duration: 0.8, delay: (index % 3) * 0.1 + 0.1 }}
       className="group flex flex-col items-start"
     >
+      {/* Photo */}
       <div className="w-full aspect-[4/5] bg-white/5 mb-8 relative overflow-hidden transition-all duration-700 grayscale hover:grayscale-0">
-        <Image
-          src={member.image}
-          alt={member.name}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-        />
+        {member.image ? (
+          <Image
+            src={member.image}
+            alt={member.name}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="font-serif text-ivory/20 text-7xl font-light">
+              {member.name.charAt(0)}
+            </span>
+          </div>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-obsidian/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+
+        {/* Social links — appear on hover */}
+        {member.socialLinks && member.socialLinks.length > 0 && (
+          <div className="absolute bottom-6 left-6 flex gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+            {member.socialLinks.map((link, i) => (
+              <a
+                key={i}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={e => e.stopPropagation()}
+                className="w-8 h-8 border border-ivory/40 flex items-center justify-center text-ivory font-sans text-[10px] tracking-wider hover:bg-ivory hover:text-obsidian transition-colors duration-300"
+                title={link.platform}
+              >
+                {getPlatformIcon(link.platform)}
+              </a>
+            ))}
+          </div>
+        )}
       </div>
 
       <p className="font-sans text-ash text-xs tracking-ultra uppercase mb-3 text-[#D87441]/80">
-        {member.role}
+        {member.designation}
       </p>
       <h3 className="font-serif text-ivory text-3xl font-light mb-4">
         {member.name}
       </h3>
-      <p className="font-sans text-bone/70 text-base leading-relaxed font-light">
-        {member.description}
-      </p>
+      {member.description && (
+        <p className="font-sans text-bone/70 text-base leading-relaxed font-light">
+          {member.description}
+        </p>
+      )}
     </motion.div>
   );
 }

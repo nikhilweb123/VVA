@@ -1,28 +1,28 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { setSessionCookie } from '@/lib/auth';
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
     const { username, password } = await request.json();
-    
-    // Using simple environment variables or fallback hardcoded credentials
-    const validUsername = process.env.ADMIN_USERNAME || 'admin';
-    const validPassword = process.env.ADMIN_PASSWORD || 'password';
 
-    if (username === validUsername && password === validPassword) {
-      // Set the session cookie
-      const cookieStore = await cookies();
-      cookieStore.set('admin_session', 'true', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 60 * 60 * 24, // 1 day session
-        path: '/',
-      });
-      return NextResponse.json({ success: true });
+    const validUsername = process.env.ADMIN_USERNAME;
+    const validPassword = process.env.ADMIN_PASSWORD;
+
+    if (!validUsername || !validPassword) {
+      console.error('ADMIN_USERNAME or ADMIN_PASSWORD env vars are not set.');
+      return NextResponse.json({ success: false, message: 'Server misconfiguration' }, { status: 500 });
     }
 
-    return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
+    if (username !== validUsername || password !== validPassword) {
+      return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
+    }
+
+    await setSessionCookie();
+    return NextResponse.json({ success: true });
   } catch (error) {
+    console.error('Login error:', error);
     return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
   }
 }

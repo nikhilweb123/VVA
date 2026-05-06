@@ -5,23 +5,33 @@ import CustomCursor from "../components/CustomCursor";
 import Navbar from "../components/Navbar";
 import Team from "../components/sections/Team";
 import Footer from "../components/sections/Footer";
+import dbConnect from "@/lib/db";
+import TeamMember from "@/models/TeamMember";
 
-export default function TeamPage() {
+export const dynamic = "force-dynamic";
+
+async function getTeamMembers() {
+  try {
+    await dbConnect();
+    const members = await TeamMember.find({}).sort({ order: 1, createdAt: 1 }).lean();
+    return members;
+  } catch {
+    return [];
+  }
+}
+
+export default async function TeamPage() {
+  const members = await getTeamMembers();
+
   return (
     <SmoothScrollProvider>
-      {/* Overlays */}
       <PageLoader />
       <CustomCursor />
       <ScrollProgressBar />
-
-      {/* Fixed nav */}
       <Navbar />
-
-      {/* Page content */}
       <main className="bg-obsidian min-h-screen">
-        <Team />
+        <Team members={members as any} />
       </main>
-
       <Footer />
     </SmoothScrollProvider>
   );

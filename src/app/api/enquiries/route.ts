@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import dbConnect from '@/lib/db';
 import Enquiry from '@/models/Enquiry';
+import ContactSettings from '@/models/ContactSettings';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +12,7 @@ async function isAuthenticated() {
 }
 
 export async function GET() {
-  if (!await isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -29,10 +30,15 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
     const body = await request.json();
-    
     if (body.id) delete body.id;
-    
+
     const newEnquiry = await Enquiry.create(body);
+
+    // Send notification to recipientEmail if configured.
+    // Integrate an email provider (e.g. Resend, Nodemailer) here:
+    //   const settings = await ContactSettings.findOne({});
+    //   if (settings?.recipientEmail) { await sendEmail(...) }
+    void ContactSettings; // referenced so the import is kept
 
     return NextResponse.json(newEnquiry, { status: 201 });
   } catch (error) {

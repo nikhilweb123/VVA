@@ -15,6 +15,8 @@ const projectRoutes = require('./routes/projectRoutes')
 const categoryRoutes = require('./routes/categoryRoutes')
 const enquiryRoutes = require('./routes/enquiryRoutes')
 const uploadRoutes = require('./routes/uploadRoutes')
+const teamRoutes = require('./routes/teamRoutes')
+const aboutRoutes = require('./routes/aboutRoutes')
 
 const app = express()
 
@@ -95,6 +97,8 @@ app.use('/api/projects', projectRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/enquiries', enquiryRoutes)
 app.use('/api/upload', uploadRoutes)
+app.use('/api/team', teamRoutes)
+app.use('/api/about', aboutRoutes)
 
 // ── Error Handlers ────────────────────────────────────────────
 app.use(notFound)
