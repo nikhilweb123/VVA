@@ -100,7 +100,7 @@ function ServiceRow({ id, service }: { id: string; service: ServiceItem; index: 
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="col-span-5"
+          className="col-span-5 pr-8 md:pr-16"
         >
           <h2 className="font-serif text-ivory text-3xl md:text-4xl font-light group-hover:px-4 transition-all duration-500">
             {service.title}
