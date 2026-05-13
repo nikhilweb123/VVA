@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Project } from "../../components/sections/ProjectShowcase";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 
 interface Category {
   id: string;
@@ -12,6 +12,7 @@ interface Category {
 interface FullProject extends Project {
   subtitle?: string;
   isMiscellaneous?: boolean;
+  order?: number;
   client?: string;
   area?: string;
   challenge?: string;
@@ -36,6 +37,8 @@ const emptyForm: Omit<FullProject, "id"> = {
   gallery: [],
 };
 
+type TabMode = "list" | "reorder";
+
 export default function AdminProjects() {
   const [projects, setProjects] = useState<FullProject[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -49,6 +52,13 @@ export default function AdminProjects() {
   const [uploading, setUploading] = useState(false);
   const [galleryUploading, setGalleryUploading] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: "success" | "error" } | null>(null);
+  const [tab, setTab] = useState<TabMode>("list");
+
+  // Reorder state — separate lists for regular and miscellaneous
+  const [regularOrder, setRegularOrder] = useState<FullProject[]>([]);
+  const [miscOrder, setMiscOrder] = useState<FullProject[]>([]);
+  const [reorderSaving, setReorderSaving] = useState(false);
+
   const srcDebounce = useRef<NodeJS.Timeout | null>(null);
   const mainImageInputRef = useRef<HTMLInputElement>(null);
   const galleryImageInputRef = useRef<HTMLInputElement>(null);
@@ -63,7 +73,10 @@ export default function AdminProjects() {
     try {
       const res = await fetch("/api/projects");
       const data = await res.json();
-      setProjects(Array.isArray(data) ? data : []);
+      const list: FullProject[] = Array.isArray(data) ? data : [];
+      setProjects(list);
+      setRegularOrder(list.filter(p => !p.isMiscellaneous));
+      setMiscOrder(list.filter(p => p.isMiscellaneous));
     } catch {
       showToast("Failed to load projects", "error");
     } finally {
@@ -83,6 +96,36 @@ export default function AdminProjects() {
     fetchProjects();
     fetchCategories();
   }, []);
+
+  // Sync reorder lists when switching to reorder tab
+  const handleTabChange = (next: TabMode) => {
+    if (next === "reorder") {
+      setRegularOrder(projects.filter(p => !p.isMiscellaneous));
+      setMiscOrder(projects.filter(p => p.isMiscellaneous));
+    }
+    setTab(next);
+  };
+
+  const handleSaveOrder = async () => {
+    setReorderSaving(true);
+    try {
+      const res = await fetch("/api/projects/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ids: regularOrder.map(p => p.id),
+          miscIds: miscOrder.map(p => p.id),
+        }),
+      });
+      if (!res.ok) throw new Error();
+      showToast("Order saved");
+      await fetchProjects();
+    } catch {
+      showToast("Failed to save order", "error");
+    } finally {
+      setReorderSaving(false);
+    }
+  };
 
   const openForm = (project?: FullProject) => {
     if (project) {
@@ -313,89 +356,145 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_preset_name`}
           </div>
         )}
 
-        {/* Projects Table */}
-        {loading ? (
-          <div className="flex items-center justify-center py-32">
-            <p className="font-sans text-ash text-xs tracking-ultra uppercase animate-pulse">Loading projects...</p>
-          </div>
-        ) : projects.length === 0 ? (
-          <div className="border border-dashed border-ivory/20 py-24 text-center">
-            <p className="font-serif text-2xl text-ivory/40 mb-4">No projects yet</p>
-            <p className="font-sans text-ash text-xs tracking-ultra uppercase mb-8">Add your first project to get started</p>
+        {/* Tab bar */}
+        <div className="flex gap-0 mb-8 border-b border-ivory/20">
+          {(["list", "reorder"] as TabMode[]).map(t => (
             <button
-              onClick={() => openForm()}
-              className="font-sans text-xs tracking-ultra uppercase border border-ivory px-8 py-3 hover:bg-ivory hover:text-obsidian transition-colors"
+              key={t}
+              onClick={() => handleTabChange(t)}
+              className={`font-sans text-[10px] tracking-ultra uppercase px-6 py-3 transition-colors border-b-2 -mb-px ${
+                tab === t
+                  ? "border-ivory text-ivory"
+                  : "border-transparent text-ash hover:text-ivory"
+              }`}
             >
-              + Add Project
+              {t === "list" ? "All Projects" : "Reorder"}
             </button>
-          </div>
-        ) : (
-          <div className="w-full overflow-x-auto border border-ivory/20">
-            <table className="w-full text-left font-sans text-sm">
-              <thead className="border-b border-ivory/20">
-                <tr>
-                  <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash w-28">Image</th>
-                  <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash">Title</th>
-                  <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash hidden md:table-cell">Category</th>
-                  <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash hidden md:table-cell">Year</th>
-                  <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash text-center">Featured</th>
-                  <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-ivory/10">
-                {projects.map(p => (
-                  <tr key={p.id} className="hover:bg-white/5 transition-colors">
-                    <td className="py-4 px-6">
-                      {p.src ? (
-                        <img
-                          src={p.src}
-                          alt={p.title}
-                          className="w-20 h-12 object-cover bg-ivory/10"
-                          onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
-                        />
-                      ) : (
-                        <div className="w-20 h-12 bg-ivory/10 flex items-center justify-center">
-                          <span className="text-ivory/20 text-[10px]">No img</span>
-                        </div>
-                      )}
-                    </td>
-                    <td className="py-4 px-6">
-                      <p className="font-serif text-lg text-ivory">{p.title}</p>
-                      <p className="text-ash text-[10px] tracking-wide mt-0.5 md:hidden">{p.category} · {p.year}</p>
-                    </td>
-                    <td className="py-4 px-6 text-ash hidden md:table-cell">{p.category}</td>
-                    <td className="py-4 px-6 text-ash hidden md:table-cell">{p.year}</td>
-                    <td className="py-4 px-6 text-center">
-                      <button
-                        onClick={() => handleToggleFeatured(p)}
-                        title="Toggle featured on home page"
-                        className={`px-4 py-1.5 text-[10px] uppercase tracking-wider transition-all ${
-                          p.featured
-                            ? "bg-ivory text-obsidian"
-                            : "bg-transparent text-ivory/40 border border-ivory/20 hover:border-ivory/60"
-                        }`}
-                      >
-                        {p.featured ? "Yes" : "No"}
-                      </button>
-                    </td>
-                    <td className="py-4 px-6 text-right whitespace-nowrap">
-                      <button
-                        onClick={() => openForm(p)}
-                        className="text-[10px] uppercase tracking-wider text-ivory hover:underline mr-4"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(p.id)}
-                        className="text-[10px] uppercase tracking-wider text-red-400 hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          ))}
+        </div>
+
+        {/* ── LIST TAB ── */}
+        {tab === "list" && (
+          <>
+            {loading ? (
+              <div className="flex items-center justify-center py-32">
+                <p className="font-sans text-ash text-xs tracking-ultra uppercase animate-pulse">Loading projects...</p>
+              </div>
+            ) : projects.length === 0 ? (
+              <div className="border border-dashed border-ivory/20 py-24 text-center">
+                <p className="font-serif text-2xl text-ivory/40 mb-4">No projects yet</p>
+                <p className="font-sans text-ash text-xs tracking-ultra uppercase mb-8">Add your first project to get started</p>
+                <button
+                  onClick={() => openForm()}
+                  className="font-sans text-xs tracking-ultra uppercase border border-ivory px-8 py-3 hover:bg-ivory hover:text-obsidian transition-colors"
+                >
+                  + Add Project
+                </button>
+              </div>
+            ) : (
+              <div className="w-full overflow-x-auto border border-ivory/20">
+                <table className="w-full text-left font-sans text-sm">
+                  <thead className="border-b border-ivory/20">
+                    <tr>
+                      <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash w-28">Image</th>
+                      <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash">Title</th>
+                      <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash hidden md:table-cell">Category</th>
+                      <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash hidden md:table-cell">Year</th>
+                      <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash text-center">Featured</th>
+                      <th className="py-4 px-6 font-normal text-[10px] tracking-ultra uppercase text-ash text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-ivory/10">
+                    {projects.map(p => (
+                      <tr key={p.id} className="hover:bg-white/5 transition-colors">
+                        <td className="py-4 px-6">
+                          {p.src ? (
+                            <img
+                              src={p.src}
+                              alt={p.title}
+                              className="w-20 h-12 object-cover bg-ivory/10"
+                              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+                            />
+                          ) : (
+                            <div className="w-20 h-12 bg-ivory/10 flex items-center justify-center">
+                              <span className="text-ivory/20 text-[10px]">No img</span>
+                            </div>
+                          )}
+                        </td>
+                        <td className="py-4 px-6">
+                          <p className="font-serif text-lg text-ivory">{p.title}</p>
+                          <p className="text-ash text-[10px] tracking-wide mt-0.5 md:hidden">{p.category} · {p.year}</p>
+                          {p.isMiscellaneous && (
+                            <span className="inline-block mt-1 text-[9px] tracking-wider uppercase px-2 py-0.5 border border-ivory/20 text-ivory/40">Misc</span>
+                          )}
+                        </td>
+                        <td className="py-4 px-6 text-ash hidden md:table-cell">{p.category}</td>
+                        <td className="py-4 px-6 text-ash hidden md:table-cell">{p.year}</td>
+                        <td className="py-4 px-6 text-center">
+                          <button
+                            onClick={() => handleToggleFeatured(p)}
+                            title="Toggle featured on home page"
+                            className={`px-4 py-1.5 text-[10px] uppercase tracking-wider transition-all ${
+                              p.featured
+                                ? "bg-ivory text-obsidian"
+                                : "bg-transparent text-ivory/40 border border-ivory/20 hover:border-ivory/60"
+                            }`}
+                          >
+                            {p.featured ? "Yes" : "No"}
+                          </button>
+                        </td>
+                        <td className="py-4 px-6 text-right whitespace-nowrap">
+                          <button
+                            onClick={() => openForm(p)}
+                            className="text-[10px] uppercase tracking-wider text-ivory hover:underline mr-4"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(p.id)}
+                            className="text-[10px] uppercase tracking-wider text-red-400 hover:underline"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ── REORDER TAB ── */}
+        {tab === "reorder" && (
+          <div className="space-y-12">
+            <div className="flex items-center justify-between">
+              <p className="font-sans text-ash text-[11px] tracking-ultra uppercase">
+                Drag rows to reorder. Changes apply when you click Save Order.
+              </p>
+              <button
+                onClick={handleSaveOrder}
+                disabled={reorderSaving}
+                className="font-sans text-xs tracking-ultra uppercase border border-ivory bg-ivory text-obsidian px-8 py-3 hover:bg-transparent hover:text-ivory transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {reorderSaving ? "Saving..." : "Save Order"}
+              </button>
+            </div>
+
+            {/* Regular Projects */}
+            <ReorderSection
+              label="Projects"
+              items={regularOrder}
+              onReorder={setRegularOrder}
+            />
+
+            {/* Miscellaneous Projects */}
+            <ReorderSection
+              label="Miscellaneous Projects"
+              items={miscOrder}
+              onReorder={setMiscOrder}
+            />
           </div>
         )}
       </div>
@@ -492,7 +591,6 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_preset_name`}
                 <div>
                   <p className="font-sans text-[10px] tracking-ultra uppercase text-ivory/30 mb-4">Main Image</p>
 
-                  {/* Upload from device */}
                   <input
                     ref={mainImageInputRef}
                     type="file"
@@ -592,7 +690,6 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_preset_name`}
                 <div>
                   <p className="font-sans text-[10px] tracking-ultra uppercase text-ivory/30 mb-4">Gallery</p>
 
-                  {/* Gallery upload from device */}
                   <input
                     ref={galleryImageInputRef}
                     type="file"
@@ -675,6 +772,84 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_preset_name`}
           </div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function ReorderSection({
+  label,
+  items,
+  onReorder,
+}: {
+  label: string;
+  items: FullProject[];
+  onReorder: (items: FullProject[]) => void;
+}) {
+  return (
+    <div>
+      <p className="font-sans text-[10px] tracking-ultra uppercase text-ivory/40 mb-4">
+        {label} <span className="text-ivory/20">({items.length})</span>
+      </p>
+
+      {items.length === 0 ? (
+        <div className="border border-dashed border-ivory/10 py-10 text-center">
+          <p className="font-sans text-ivory/20 text-xs tracking-ultra uppercase">No projects in this group</p>
+        </div>
+      ) : (
+        <Reorder.Group
+          axis="y"
+          values={items}
+          onReorder={onReorder}
+          className="space-y-2"
+        >
+          {items.map((p, index) => (
+            <Reorder.Item
+              key={p.id}
+              value={p}
+              className="flex items-center gap-4 border border-ivory/20 bg-obsidian px-4 py-3 cursor-grab active:cursor-grabbing hover:border-ivory/40 transition-colors select-none"
+            >
+              {/* Drag handle */}
+              <span className="text-ivory/20 flex flex-col gap-[3px] flex-shrink-0">
+                <span className="block w-4 h-px bg-current" />
+                <span className="block w-4 h-px bg-current" />
+                <span className="block w-4 h-px bg-current" />
+              </span>
+
+              {/* Position index */}
+              <span className="font-sans text-[10px] tracking-ultra text-ivory/30 w-6 flex-shrink-0">
+                {String(index + 1).padStart(2, "0")}
+              </span>
+
+              {/* Thumbnail */}
+              {p.src ? (
+                <img
+                  src={p.src}
+                  alt={p.title}
+                  className="w-14 h-9 object-cover bg-ivory/10 flex-shrink-0"
+                  onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+                />
+              ) : (
+                <div className="w-14 h-9 bg-ivory/10 flex-shrink-0" />
+              )}
+
+              {/* Title + meta */}
+              <div className="flex-1 min-w-0">
+                <p className="font-serif text-ivory text-base truncate">{p.title}</p>
+                <p className="font-sans text-ash text-[10px] tracking-wide">{p.category} · {p.year}</p>
+              </div>
+
+              {/* Badges */}
+              <div className="flex gap-2 flex-shrink-0">
+                {p.featured && (
+                  <span className="font-sans text-[9px] tracking-wider uppercase px-2 py-0.5 bg-ivory/10 text-ivory/60">
+                    Featured
+                  </span>
+                )}
+              </div>
+            </Reorder.Item>
+          ))}
+        </Reorder.Group>
+      )}
     </div>
   );
 }

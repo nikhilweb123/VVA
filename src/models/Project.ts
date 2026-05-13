@@ -10,6 +10,7 @@ export interface IProject {
   subtitle?: string;
   featured: boolean;
   isMiscellaneous?: boolean;
+  order?: number;
   client?: string;
   area?: string;
   challenge?: string;
@@ -28,6 +29,7 @@ const ProjectSchema = new Schema<IProject>(
     subtitle: { type: String },
     featured: { type: Boolean, default: false },
     isMiscellaneous: { type: Boolean, default: false },
+    order: { type: Number, default: 0 },
     client: { type: String },
     area: { type: String },
     challenge: { type: String },
