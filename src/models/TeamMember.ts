@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, models } from 'mongoose';
+import { Schema, model, models } from 'mongoose';
 
 export interface ISocialLink {
   platform: string;
@@ -18,7 +18,7 @@ const TeamMemberSchema = new Schema<ITeamMember>(
   {
     name: { type: String, required: true },
     designation: { type: String, required: true },
-    image: { type: String, default: '' },
+    image: { type: String, required: true },
     description: { type: String, default: '' },
     socialLinks: [
       {

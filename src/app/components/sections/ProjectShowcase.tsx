@@ -14,12 +14,97 @@ export interface Project {
   year: string;
   src: string;
   description: string;
+  subtitle?: string;
   featured?: boolean;
+  isMiscellaneous?: boolean;
 }
 
 interface ProjectCardProps {
   project: Project;
   index: number;
+}
+
+interface MiscProjectCardProps {
+  project: Project;
+}
+
+function MiscProjectCard({ project }: MiscProjectCardProps) {
+  const { ref, inView } = useInView({ threshold: 0.15 });
+  const imgRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = imgRef.current;
+    if (!el || typeof window === "undefined") return;
+
+    let gsap: any;
+    let ctx: any;
+
+    const init = async () => {
+      const g = await import("gsap");
+      const { ScrollTrigger } = await import("gsap/ScrollTrigger");
+      gsap = g.gsap;
+      gsap.registerPlugin(ScrollTrigger);
+
+      ctx = gsap.context(() => {
+        gsap.fromTo(
+          el.querySelector("img"),
+          { scale: 1.12, y: "-6%" },
+          {
+            scale: 1,
+            y: "6%",
+            ease: "none",
+            scrollTrigger: {
+              trigger: el,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.2,
+            },
+          }
+        );
+      });
+    };
+
+    init();
+    return () => ctx?.revert();
+  }, []);
+
+  return (
+    <div ref={ref} className="flex flex-col">
+      {/* Full-width image */}
+      <div
+        ref={imgRef}
+        className="relative w-full overflow-hidden"
+        style={{ height: "65vh" }}
+      >
+        <Image
+          src={project.src}
+          alt={project.title}
+          fill
+          sizes="100vw"
+          className="object-cover"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-obsidian/25" />
+      </div>
+
+      {/* Text below — same motion reveal */}
+      <motion.div
+        initial={{ opacity: 0, y: 28 }}
+        animate={inView ? { opacity: 1, y: 0 } : {}}
+        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
+        className="px-8 md:px-16 py-10"
+      >
+        <h2 className="font-serif text-ivory text-3xl md:text-5xl font-light leading-tight mb-3">
+          {project.title}
+        </h2>
+        {project.subtitle && (
+          <p className="font-sans text-ash text-sm tracking-wide">
+            {project.subtitle}
+          </p>
+        )}
+      </motion.div>
+    </div>
+  );
 }
 
 function ProjectCard({ project, index }: ProjectCardProps) {
@@ -223,9 +308,13 @@ export default function ProjectShowcase({ allProjects = false }: { allProjects?:
             <p className="font-sans text-ash text-xs tracking-ultra uppercase animate-pulse">Loading projects...</p>
           </div>
         ) : (
-          projects.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
-          ))
+          projects.map((project, i) =>
+            project.isMiscellaneous ? (
+              <MiscProjectCard key={project.id} project={project} />
+            ) : (
+              <ProjectCard key={project.id} project={project} index={i} />
+            )
+          )
         )}
       </div>
     </section>

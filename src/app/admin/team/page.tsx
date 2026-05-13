@@ -165,8 +165,8 @@ export default function AdminTeam() {
 
   /* save */
   const save = async () => {
-    if (!form.name || !form.designation) {
-      showToast("Name and Designation are required", "error");
+    if (!form.name || !form.designation || !form.image) {
+      showToast("Name, Designation, and Image are required", "error");
       return;
     }
     setSaving(true);
@@ -356,7 +356,7 @@ export default function AdminTeam() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 30 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="w-full max-w-2xl bg-[#1a1a1a] border border-ivory/15 p-8"
+              className="w-full max-w-2xl .bg-obsidian border border-ivory p-8"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal header */}

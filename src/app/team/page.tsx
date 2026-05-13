@@ -3,18 +3,18 @@ import SmoothScrollProvider from "../components/SmoothScrollProvider";
 import ScrollProgressBar from "../components/ScrollProgressBar";
 import CustomCursor from "../components/CustomCursor";
 import Navbar from "../components/Navbar";
-import Team from "../components/sections/Team";
+import Team, { type TeamMember } from "../components/sections/Team";
 import Footer from "../components/sections/Footer";
 import dbConnect from "@/lib/db";
-import TeamMember from "@/models/TeamMember";
+import TeamMemberModel from "@/models/TeamMember";
 
 export const dynamic = "force-dynamic";
 
-async function getTeamMembers() {
+async function getTeamMembers(): Promise<TeamMember[]> {
   try {
     await dbConnect();
-    const members = await TeamMember.find({}).sort({ order: 1, createdAt: 1 }).lean();
-    return members;
+    const docs = await TeamMemberModel.find({}).sort({ order: 1, createdAt: 1 });
+    return docs.map((d) => d.toJSON() as TeamMember);
   } catch {
     return [];
   }
@@ -30,7 +30,7 @@ export default async function TeamPage() {
       <ScrollProgressBar />
       <Navbar />
       <main className="bg-obsidian min-h-screen">
-        <Team members={members as any} />
+        <Team members={members} />
       </main>
       <Footer />
     </SmoothScrollProvider>

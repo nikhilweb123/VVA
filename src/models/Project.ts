@@ -7,7 +7,9 @@ export interface IProject {
   year: string;
   src: string;
   description: string;
+  subtitle?: string;
   featured: boolean;
+  isMiscellaneous?: boolean;
   client?: string;
   area?: string;
   challenge?: string;
@@ -23,7 +25,9 @@ const ProjectSchema = new Schema<IProject>(
     year: { type: String, required: true },
     src: { type: String, required: true },
     description: { type: String, required: true },
+    subtitle: { type: String },
     featured: { type: Boolean, default: false },
+    isMiscellaneous: { type: Boolean, default: false },
     client: { type: String },
     area: { type: String },
     challenge: { type: String },

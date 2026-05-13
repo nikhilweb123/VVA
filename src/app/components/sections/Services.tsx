@@ -102,7 +102,7 @@ function ServiceRow({ id, service }: { id: string; service: ServiceItem; index: 
           transition={{ duration: 0.8, delay: 0.2 }}
           className="col-span-5"
         >
-          <h2 className="font-serif text-ivory text-3xl md:text-5xl font-light group-hover:px-4 transition-all duration-500">
+          <h2 className="font-serif text-ivory text-3xl md:text-4xl font-light group-hover:px-4 transition-all duration-500">
             {service.title}
           </h2>
         </motion.div>
@@ -114,7 +114,7 @@ function ServiceRow({ id, service }: { id: string; service: ServiceItem; index: 
           transition={{ duration: 0.8, delay: 0.3 }}
           className="col-span-5"
         >
-          <p className="font-sans text-bone/70 text-base md:text-xl leading-relaxed font-light">
+          <p className="font-sans text-bone/70 text-sm md:text-base leading-relaxed font-light">
             {service.description}
           </p>
         </motion.div>

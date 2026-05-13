@@ -19,35 +19,6 @@ export interface TeamMember {
   order: number;
 }
 
-const FALLBACK_MEMBERS: TeamMember[] = [
-  {
-    id: "1",
-    name: "Vikram Varma",
-    designation: "Principal Architect",
-    image: "/team/member1.png",
-    description: "With over 20 years of experience, Vikram leads the studio's architectural vision, bringing a meticulous eye for detail and context.",
-    socialLinks: [],
-    order: 0,
-  },
-  {
-    id: "2",
-    name: "Ananya Singh",
-    designation: "Head of Interiors",
-    image: "/team/member2.png",
-    description: "Ananya transforms abstract concepts into tangible environments, focusing on materiality, light, and human experience.",
-    socialLinks: [],
-    order: 1,
-  },
-  {
-    id: "3",
-    name: "Rajesh Nair",
-    designation: "Master Planning Lead",
-    image: "/team/member3.png",
-    description: "Rajesh specializes in large-scale urban strategies, ensuring our developments remain sustainable and community-centric.",
-    socialLinks: [],
-    order: 2,
-  },
-];
 
 const PLATFORM_ICONS: Record<string, string> = {
   linkedin: "in",
@@ -67,7 +38,7 @@ interface TeamProps {
 
 export default function Team({ members }: TeamProps) {
   const { ref: headerRef, inView: headerInView } = useInView();
-  const list = members && members.length > 0 ? members : FALLBACK_MEMBERS;
+  const list = members ?? [];
 
   return (
     <section className="bg-obsidian min-h-screen">
@@ -107,11 +78,19 @@ export default function Team({ members }: TeamProps) {
         <hr className="hr-thin mx-8 md:mx-16 mb-16" />
 
         {/* Team Grid */}
-        <div className="px-8 md:px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
-          {list.map((member, index) => (
-            <TeamCard key={member.id ?? index} member={member} index={index} />
-          ))}
-        </div>
+        {list.length === 0 ? (
+          <div className="px-8 md:px-16 flex items-center justify-center py-24">
+            <p className="font-sans text-ivory/30 text-sm tracking-wider uppercase">
+              Team members coming soon.
+            </p>
+          </div>
+        ) : (
+          <div className="px-8 md:px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+            {list.map((member, index) => (
+              <TeamCard key={member.id ?? index} member={member} index={index} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

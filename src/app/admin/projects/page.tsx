@@ -10,6 +10,8 @@ interface Category {
 }
 
 interface FullProject extends Project {
+  subtitle?: string;
+  isMiscellaneous?: boolean;
   client?: string;
   area?: string;
   challenge?: string;
@@ -24,7 +26,9 @@ const emptyForm: Omit<FullProject, "id"> = {
   year: new Date().getFullYear().toString(),
   src: "",
   description: "",
+  subtitle: "",
   featured: false,
+  isMiscellaneous: false,
   client: "",
   area: "",
   challenge: "",
@@ -90,7 +94,9 @@ export default function AdminProjects() {
         year: project.year,
         src: project.src,
         description: project.description,
+        subtitle: project.subtitle ?? "",
         featured: project.featured ?? false,
+        isMiscellaneous: project.isMiscellaneous ?? false,
         client: project.client ?? "",
         area: project.area ?? "",
         challenge: project.challenge ?? "",
@@ -450,6 +456,9 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_preset_name`}
                         {categories.map(c => (
                           <option key={c.id} value={c.name} className="bg-obsidian">{c.name}</option>
                         ))}
+                        {!categories.some(c => c.name.toLowerCase() === "miscellaneous") && (
+                          <option value="Miscellaneous" className="bg-obsidian">Miscellaneous</option>
+                        )}
                       </select>
                     </Field>
                     <Field label="Year *">
@@ -536,14 +545,24 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_preset_name`}
                 {/* Description */}
                 <div>
                   <p className="font-sans text-[10px] tracking-ultra uppercase text-ivory/30 mb-4">Description</p>
-                  <Field label="Project Description *">
-                    <textarea
-                      name="description" required rows={4}
-                      value={form.description} onChange={handleChange}
-                      className={inputCls + " resize-none"}
-                      placeholder="Brief description shown on the projects page..."
-                    />
-                  </Field>
+                  <div className="space-y-6">
+                    <Field label="Project Description *">
+                      <textarea
+                        name="description" required rows={4}
+                        value={form.description} onChange={handleChange}
+                        className={inputCls + " resize-none"}
+                        placeholder="Brief description shown on the projects page..."
+                      />
+                    </Field>
+                    <Field label="Subtitle (shown on miscellaneous card)">
+                      <input
+                        type="text" name="subtitle"
+                        value={form.subtitle} onChange={handleChange}
+                        className={inputCls}
+                        placeholder="e.g. Interior · 2024"
+                      />
+                    </Field>
+                  </div>
                 </div>
 
                 {/* Details */}
@@ -609,17 +628,30 @@ NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET=your_preset_name`}
                   </p>
                 </div>
 
-                {/* Featured */}
-                <div className="flex items-center gap-4 pt-2">
-                  <input
-                    type="checkbox" name="featured" id="featured"
-                    checked={form.featured}
-                    onChange={handleChange}
-                    className="w-4 h-4 cursor-pointer accent-ivory"
-                  />
-                  <label htmlFor="featured" className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase cursor-pointer">
-                    Show on home page (Featured)
-                  </label>
+                {/* Featured + Miscellaneous */}
+                <div className="flex flex-col gap-4 pt-2">
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="checkbox" name="featured" id="featured"
+                      checked={form.featured}
+                      onChange={handleChange}
+                      className="w-4 h-4 cursor-pointer accent-ivory"
+                    />
+                    <label htmlFor="featured" className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase cursor-pointer">
+                      Show on home page (Featured)
+                    </label>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="checkbox" name="isMiscellaneous" id="isMiscellaneous"
+                      checked={form.isMiscellaneous ?? false}
+                      onChange={handleChange}
+                      className="w-4 h-4 cursor-pointer accent-ivory"
+                    />
+                    <label htmlFor="isMiscellaneous" className="font-sans text-ivory/60 text-[10px] tracking-ultra uppercase cursor-pointer">
+                      Display as miscellaneous (full-width image, title &amp; subtitle only)
+                    </label>
+                  </div>
                 </div>
 
                 {/* Actions */}

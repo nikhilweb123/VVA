@@ -13,6 +13,13 @@ export default function AdminDashboard() {
           </div>
         </Link>
         
+        <Link href="/admin/team" className="block group">
+          <div className="p-8 border border-ivory/20 bg-ivory/5 hover:bg-ivory/10 transition-colors h-full flex flex-col justify-center">
+            <h2 className="text-2xl font-serif text-ivory mb-2">Team</h2>
+            <p className="text-ivory/60 font-sans">Manage team members, photos & designations</p>
+          </div>
+        </Link>
+
         <Link href="/admin/categories" className="block group">
           <div className="p-8 border border-ivory/20 bg-ivory/5 hover:bg-ivory/10 transition-colors h-full flex flex-col justify-center">
             <h2 className="text-2xl font-serif text-ivory mb-2">Categories</h2>
