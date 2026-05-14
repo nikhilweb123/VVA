@@ -63,14 +63,14 @@ export default function ProjectPage() {
       <main className="min-h-screen">
         {project.isMiscellaneous ? (
           /* ── Miscellaneous project layout ── */
-          <div className="bg-white pt-28 pb-24">
+          <div className="bg-obsidian pt-28 pb-24">
             <div className="px-6 sm:px-10 md:px-16 lg:px-20 max-w-5xl">
               {/* Title */}
               <motion.h1
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="font-serif text-obsidian text-4xl sm:text-5xl md:text-6xl font-light mb-5 leading-tight"
+                className="font-serif text-ivory text-4xl sm:text-5xl md:text-6xl font-light mb-5 leading-tight"
               >
                 {project.title}
               </motion.h1>
@@ -81,7 +81,7 @@ export default function ProjectPage() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-sans text-obsidian/70 text-base sm:text-[17px] leading-relaxed mb-8 max-w-3xl"
+                  className="font-sans text-ash text-base sm:text-[17px] leading-relaxed mb-8 max-w-3xl"
                 >
                   {project.description}
                 </motion.p>
