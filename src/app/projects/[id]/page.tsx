@@ -61,68 +61,48 @@ export default function ProjectPage() {
       <Navbar />
 
       <main className="min-h-screen">
-        {project.isMiscellaneous ? (
-          /* ── Miscellaneous project layout ── */
-          <div className="bg-obsidian pt-28 pb-24">
-            <div className="px-6 sm:px-10 md:px-16 lg:px-20 max-w-5xl">
-              {/* Title */}
-              <motion.h1
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="font-serif text-ivory text-4xl sm:text-5xl md:text-6xl font-light mb-5 leading-tight"
-              >
+        {project.isMiscellaneous === true ? (
+          /* ── Miscellaneous project layout: title → description → image ── */
+          <div className="bg-obsidian min-h-screen pt-32 pb-24">
+            <div className="w-full px-6 sm:px-10 md:px-16 lg:px-24">
+
+              {/* 1. Title */}
+              <h1 className="font-serif text-ivory text-4xl sm:text-5xl md:text-6xl font-light leading-tight mb-6">
                 {project.title}
-              </motion.h1>
+              </h1>
 
-              {/* Description — only if present */}
+              {/* 2. Description — only if present */}
               {project.description && (
-                <motion.p
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                  className="font-sans text-ash text-base sm:text-[17px] leading-relaxed mb-8 max-w-3xl"
-                >
+                <p className="font-sans text-ash text-base sm:text-lg leading-relaxed mb-10 max-w-3xl">
                   {project.description}
-                </motion.p>
+                </p>
               )}
-            </div>
 
-            {/* Main image — full width of the viewport */}
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-              className="px-6 sm:px-10 md:px-16 lg:px-20 max-w-5xl"
-            >
-              <img
-                src={project.src}
-                alt={project.title}
-                className="w-full h-auto object-cover"
-              />
-            </motion.div>
-
-            {/* Gallery — each image full-width stacked */}
-            {project.gallery && project.gallery.length > 0 && (
-              <div className="px-6 sm:px-10 md:px-16 lg:px-20 max-w-5xl space-y-4 mt-4">
-                {project.gallery.map((img, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: idx * 0.05 }}
-                    viewport={{ once: true }}
-                    className="w-full overflow-hidden"
-                  >
-                    <img
-                      src={img}
-                      alt={`${project.title} ${idx + 1}`}
-                      className="w-full h-auto object-cover"
-                    />
-                  </motion.div>
-                ))}
+              {/* 3. Main image */}
+              <div className="w-full mb-4">
+                <img
+                  src={project.src}
+                  alt={project.title}
+                  className="w-full h-auto block"
+                />
               </div>
-            )}
+
+              {/* 4. Gallery — stacked full-width */}
+              {project.gallery && project.gallery.length > 0 && (
+                <div className="space-y-4">
+                  {project.gallery.map((img, idx) => (
+                    <div key={idx} className="w-full">
+                      <img
+                        src={img}
+                        alt={`${project.title} ${idx + 1}`}
+                        className="w-full h-auto block"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+            </div>
           </div>
         ) : (
           /* ── Regular project layout ── */
