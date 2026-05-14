@@ -168,9 +168,6 @@ export default function ProjectPage() {
                   </div>
                 )}
 
-                <p className="text-ivory/70 font-sans text-lg leading-relaxed">
-                  Our approach centered on creating a harmonious balance between functional efficiency and aesthetic distinction. Every element, from the structural framework to the material selection, was carefully curated to respond to the unique environmental and cultural context of {project.location}.
-                </p>
               </motion.div>
             </div>
           </div>
