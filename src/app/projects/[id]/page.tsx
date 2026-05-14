@@ -64,63 +64,65 @@ export default function ProjectPage() {
         {project.isMiscellaneous ? (
           /* ── Miscellaneous project layout ── */
           <div className="bg-white pt-28 pb-24">
-            <div className="px-6 sm:px-10 md:px-16 lg:px-24 max-w-6xl mx-auto">
+            <div className="px-6 sm:px-10 md:px-16 lg:px-20 max-w-5xl">
               {/* Title */}
               <motion.h1
                 initial={{ opacity: 0, y: 24 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                className="font-serif text-obsidian text-4xl sm:text-5xl md:text-6xl font-light mb-6 leading-tight"
+                className="font-serif text-obsidian text-4xl sm:text-5xl md:text-6xl font-light mb-5 leading-tight"
               >
                 {project.title}
               </motion.h1>
 
-              {/* Description */}
-              <motion.p
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-                className="font-sans text-obsidian/70 text-base sm:text-lg leading-relaxed mb-10 max-w-3xl"
-              >
-                {project.description}
-              </motion.p>
-
-              {/* Main image */}
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                className="w-full overflow-hidden mb-6"
-              >
-                <img
-                  src={project.src}
-                  alt={project.title}
-                  className="w-full h-auto object-cover"
-                />
-              </motion.div>
-
-              {/* Gallery — each image full-width stacked */}
-              {project.gallery && project.gallery.length > 0 && (
-                <div className="space-y-6">
-                  {project.gallery.map((img, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.8, delay: idx * 0.05 }}
-                      viewport={{ once: true }}
-                      className="w-full overflow-hidden"
-                    >
-                      <img
-                        src={img}
-                        alt={`${project.title} ${idx + 1}`}
-                        className="w-full h-auto object-cover"
-                      />
-                    </motion.div>
-                  ))}
-                </div>
+              {/* Description — only if present */}
+              {project.description && (
+                <motion.p
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+                  className="font-sans text-obsidian/70 text-base sm:text-[17px] leading-relaxed mb-8 max-w-3xl"
+                >
+                  {project.description}
+                </motion.p>
               )}
             </div>
+
+            {/* Main image — full width of the viewport */}
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="px-6 sm:px-10 md:px-16 lg:px-20 max-w-5xl"
+            >
+              <img
+                src={project.src}
+                alt={project.title}
+                className="w-full h-auto object-cover"
+              />
+            </motion.div>
+
+            {/* Gallery — each image full-width stacked */}
+            {project.gallery && project.gallery.length > 0 && (
+              <div className="px-6 sm:px-10 md:px-16 lg:px-20 max-w-5xl space-y-4 mt-4">
+                {project.gallery.map((img, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: idx * 0.05 }}
+                    viewport={{ once: true }}
+                    className="w-full overflow-hidden"
+                  >
+                    <img
+                      src={img}
+                      alt={`${project.title} ${idx + 1}`}
+                      className="w-full h-auto object-cover"
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           /* ── Regular project layout ── */
