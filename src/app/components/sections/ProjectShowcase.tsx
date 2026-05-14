@@ -69,42 +69,47 @@ function MiscProjectCard({ project }: MiscProjectCardProps) {
   }, []);
 
   return (
-    <div ref={ref} className="flex flex-col">
-      {/* Full-width image */}
-      <div
-        ref={imgRef}
-        className="relative w-full overflow-hidden"
-        style={{ height: "65vh" }}
-      >
-        <Image
-          src={project.src}
-          alt={project.title}
-          fill
-          sizes="100vw"
-          className="object-cover"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-obsidian/25" />
-      </div>
+  <div ref={ref} className="bg-[#f3f3f3] py-16 px-6 md:px-16">
+    
+    {/* Title + Description */}
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.8 }}
+      className="max-w-6xl mb-10"
+    >
+      <h2 className="text-black font-serif text-4xl md:text-6xl font-light mb-6">
+        {project.title}
+      </h2>
 
-      {/* Text below — same motion reveal */}
-      <motion.div
-        initial={{ opacity: 0, y: 28 }}
-        animate={inView ? { opacity: 1, y: 0 } : {}}
-        transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-        className="px-8 md:px-16 py-10"
-      >
-        <h2 className="font-serif text-ivory text-3xl md:text-5xl font-light leading-tight mb-3">
-          {project.title}
-        </h2>
-        {project.subtitle && (
-          <p className="font-sans text-ash text-sm tracking-wide">
-            {project.subtitle}
-          </p>
-        )}
-      </motion.div>
-    </div>
-  );
+      {project.subtitle && (
+        <p className="text-black/80 text-base md:text-lg leading-relaxed max-w-5xl">
+          {project.subtitle}
+        </p>
+      )}
+    </motion.div>
+
+    {/* Large Image Section */}
+    <motion.div
+      ref={imgRef}
+      initial={{ opacity: 0, scale: 0.96 }}
+      animate={inView ? { opacity: 1, scale: 1 } : {}}
+      transition={{ duration: 1 }}
+      className="relative w-full overflow-hidden bg-black"
+      style={{ height: "55vh" }}
+    >
+      <Image
+        src={project.src}
+        alt={project.title}
+        fill
+        sizes="100vw"
+        className="object-cover"
+        loading="lazy"
+      />
+    </motion.div>
+
+  </div>
+);
 }
 
 function ProjectCard({ project, index }: ProjectCardProps) {
