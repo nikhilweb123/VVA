@@ -48,7 +48,6 @@ export default async function Home() {
         <AboutPreview isPreview={true} about={(content as any)?.about} />
         <Services
           isPage={false}
-          services={(content as any)?.services}
           heading={(content as any)?.servicesHeading}
           subheading={(content as any)?.servicesSubheading}
         />
