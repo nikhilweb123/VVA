@@ -23,6 +23,9 @@ export default function AdminNavbar() {
           <Link href="/admin/categories" className={`pb-1 transition-colors ${isActive("/admin/categories")}`}>
             Categories
           </Link>
+          <Link href="/admin/services" className={`pb-1 transition-colors ${isActive("/admin/services")}`}>
+            Services
+          </Link>
           <Link href="/admin/team" className={`pb-1 transition-colors ${isActive("/admin/team")}`}>
             Team
           </Link>

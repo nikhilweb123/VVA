@@ -48,6 +48,13 @@ export default function AdminDashboard() {
           </div>
         </Link>
 
+        <Link href="/admin/services" className="block group">
+          <div className="p-8 border border-ivory/20 bg-ivory/5 hover:bg-ivory/10 transition-colors h-full flex flex-col justify-center">
+            <h2 className="text-2xl font-serif text-ivory mb-2">Services</h2>
+            <p className="text-ivory/60 font-sans">Manage services and service categories</p>
+          </div>
+        </Link>
+
         <Link href="/admin/site-settings" className="block group md:col-span-2">
           <div className="p-8 border border-ivory/20 bg-ivory/5 hover:bg-ivory/10 transition-colors h-full flex flex-col justify-center">
             <h2 className="text-2xl font-serif text-ivory mb-2">Site Settings</h2>
