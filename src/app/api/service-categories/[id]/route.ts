@@ -5,14 +5,15 @@ import ServiceCategory from '@/models/ServiceCategory';
 
 export const dynamic = 'force-dynamic';
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
   if (!await isAuthenticated()) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     await dbConnect();
-    const category = await ServiceCategory.findByIdAndDelete(params.id);
+    const { id } = await context.params;
+    const category = await ServiceCategory.findByIdAndDelete(id);
     if (!category) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     return NextResponse.json({ success: true });

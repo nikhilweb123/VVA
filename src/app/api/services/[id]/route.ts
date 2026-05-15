@@ -5,17 +5,18 @@ import Service from '@/models/Service';
 
 export const dynamic = 'force-dynamic';
 
-export async function PUT(request: Request, { params }: { params: { id: string } }) {
+export async function PUT(request: Request, context: { params: Promise<{ id: string }> }) {
   if (!await isAuthenticated()) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     await dbConnect();
+    const { id } = await context.params;
     const body = await request.json();
     if (body.id) delete body.id;
 
-    const service = await Service.findByIdAndUpdate(params.id, body, { new: true });
+    const service = await Service.findByIdAndUpdate(id, body, { new: true });
     if (!service) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     return NextResponse.json(service);
@@ -25,14 +26,15 @@ export async function PUT(request: Request, { params }: { params: { id: string }
   }
 }
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_request: Request, context: { params: Promise<{ id: string }> }) {
   if (!await isAuthenticated()) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
     await dbConnect();
-    const service = await Service.findByIdAndDelete(params.id);
+    const { id } = await context.params;
+    const service = await Service.findByIdAndDelete(id);
     if (!service) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
     return NextResponse.json({ success: true });
